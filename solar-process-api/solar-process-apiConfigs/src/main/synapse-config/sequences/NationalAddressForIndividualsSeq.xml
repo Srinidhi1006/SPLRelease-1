@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="NationalAddressForIndividualsSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.Iqama')" name="Iqama" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.page')" name="page" scope="default" type="STRING"/>
+        <property expression="translate(get-property('language'), ' ', '')" name="language" scope="default" type="STRING"/>
+    </propertyGroup>
+    <filter regex="true" source="boolean($ctx:page)">
+        <then/>
+        <else>
+            <property name="page" scope="default" type="STRING" value="1"/>
+        </else>
+    </filter>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="NationalAddressForIndividuals"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET NationalAddressForIndividuals"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="fetchByQuery"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="boolean(get-property('query.param.Iqama'))">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Sorry.. there is no data for the entered ID</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+     "PostCode":null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "Sorry.. there is no data for the entered ID",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>الإدخال غير مكتمل، الرجاء إعادة المحاولة</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{ "totalSearchResults": "0", "Addresses": [],&#xd;
+  "PostCode":null,&#xd;
+ "success": false, "result": null, "statusdescription":"الإدخال غير مكتمل، الرجاء إعادة المحاولة", "fullexception": null }</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <filter regex="[0-9]{10}" source="get-property('query.param.Iqama')">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Incomplete ID number, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": null,&#xd;
+      "PostCode":null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "Incomplete ID number, please try again",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>الإدخال غير مكتمل، الرجاء إعادة المحاولة</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": null,&#xd;
+   "postCode":null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription":"الإدخال غير مكتمل، الرجاء إعادة المحاولة",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+     "Query": "$1",&#xd;
+     "SolrObject": "CRMNA",&#xd;
+     "Language":"$2",&#xd;
+     "RequestFrom": "NationalAddressForIndividuals",&#xd;
+      "start": $3,&#xd;
+      "rows": 10&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="fn:concat('+PID:',$ctx:Iqama,'^=1.0 +Customertypecode:&quot;1&quot;^=1.0 +Status:&quot;1&quot;^=1.0+IsDefaultAddress:&quot;true&quot;')"/>
+            <arg evaluator="xml" expression="get-property('query.param.language')"/>
+            <arg evaluator="xml" expression="$ctx:page"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="SolarSystemApiEP"/>
+    </call>
+    <propertyGroup>
+        <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="json-eval($.success)">
+        <then>
+            <log level="custom">
+                <property name="Endpoint" value="true"/>
+            </log>
+        </then>
+        <else>
+            <log>
+                <property name="Endpoint" value="false"/>
+            </log>
+            <loopback/>
+        </else>
+    </filter>
+    <filter xpath="$ctx:totalSearchResults>0">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Sorry.. there is no data for the entered ID</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{ "totalSearchResults": "0", "Addresses": [], "success": false, "result": null, "statusdescription": "Sorry.. there is no data for the entered ID", "fullexception": null }</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>عفوا .. لا توجد بيانات لصاحبـ/ة الهوية الذي تم إدخاله</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </IndividualAddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{ "totalSearchResults": "0", "KSABusinesses": [], "success": false, "result": null, "statusdescription": "عفوا .. لا توجد بيانات لصاحبـ/ة الهوية الذي تم إدخاله", "fullexception": null }</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <script key="conf:scripts/NationalAddforIndividual.js" language="nashornJs"/>
+    <property expression="json-eval($.success)" name="successStatus" scope="default" type="STRING"/>
+    <switch source="get-property('query.param.format')">
+        <case regex="xml">
+            <script language="js"><![CDATA[var payload = mc.getPayloadJSON()
+
+for(i=0;i<payload.Addresses.length;i++) 
+{
+
+    if(payload.Addresses[i].DistrictID==null)
+{
+delete payload.Addresses[i].DistrictID;
+}
+}
+ mc.setPayloadJSON(payload)]]></script>
+            <propertyGroup>
+                <property expression="json-eval($.Addresses)" name="IndividualAddress" scope="default" type="STRING"/>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+                <property expression="json-eval($.PostCode)" name="totalSearchResultsPostCode" scope="default" type="STRING"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                <property name="CommonLogMessageType" scope="default" type="STRING" value="application/xml"/>
+                <property expression="json-eval($.result)" name="result" scope="default" type="STRING"/>
+                <property expression="json-eval($.fullexception)" name="fullexception" scope="default" type="STRING"/>
+                <property name="CommonLogMessageType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{"Addresses":{"IndividualAddress":$1}}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:IndividualAddress"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <IndividualAddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>$2</success>
+                        <statusdescription>$3</statusdescription>
+                        <totalSearchResults>$4</totalSearchResults>
+ $1
+ </IndividualAddressOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                    <arg evaluator="xml" expression="$ctx:totalSearchResults"/>
+                </args>
+            </payloadFactory>
+        </case>
+        <case regex="json">
+            <property name="contentType" scope="default" type="STRING" value="application/json"/>
+        </case>
+        <default>
+            <property name="contentType" scope="default" type="STRING" value="application/json"/>
+        </default>
+    </switch>
+</sequence>

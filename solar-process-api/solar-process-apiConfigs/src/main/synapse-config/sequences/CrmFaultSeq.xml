@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="CrmFaultSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+    "totalSearchResults": 0,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "something went worng please try again",&#xd;
+    "fullexception": null&#xd;
+}</format>
+        <args/>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="isError" value="true"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <respond/>
+</sequence>

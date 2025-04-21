@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPCities_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.type')" name="type" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.regionid')" name="regionid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityid')" name="cityid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.catcode')" name="catcode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="LookUpsCities"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/ProcessAPI/Cities"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/ProcessAPI/Cities"/>
+    </propertyGroup>
+    <log level="custom">
+        <property name="Entry == " value="Entry"/>
+    </log>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"language":"$1",&#xd;
+"type":"cities",&#xd;
+"regionid":"$2",&#xd;
+"cityid":"$3",&#xd;
+"catcode":"$4"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:regionid"/>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:catcode"/>
+        </args>
+    </payloadFactory>
+    <log level="custom" separator="    afterpayloadprocessapi   ">
+        <property expression="$ctx:language" name="language"/>
+        <property expression="$ctx:type" name="type"/>
+    </log>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPCitiesSys_EP"/>
+    </call>
+    <log level="full" separator="    ProcessBeforescript   "/>
+    <filter regex="null" source="json-eval($.Cities)">
+        <then>
+            <log level="full" separator="logif==="/>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <log level="full" separator="log in Filter"/>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>NO-RESULTS</statusdescription>
+                            </LookupOutputParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <log separator="Log in else===="/>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "Regions": null,&#xd;
+    "Cities": null,&#xd;
+    "Districts": null,&#xd;
+    "ZipCodes": null,&#xd;
+    "ServiceCategories": null,&#xd;
+    "ServiceSubCategories": null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "NO-RESULTS",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </then>
+        <else>
+            <log level="full" separator="logelse==="/>
+        </else>
+    </filter>
+    <datamapper config="gov:datamapper/DBSPCitiesRegistry.dmc" inputSchema="gov:datamapper/DBSPCitiesRegistry_inputSchema.json" inputType="JSON" outputSchema="gov:datamapper/DBSPCitiesRegistry_outputSchema.json" outputType="JSON" xsltStyleSheet="gov:datamapper/DBSPCitiesRegistry_xsltStyleSheet.xml"/>
+    <property expression="json-eval($.Cities)" name="Cities" scope="default" type="STRING"/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"Regions":null,&#xd;
+	"Cities": $1,&#xd;
+	"Districts": null,&#xd;
+	"ZipCodes": null,&#xd;
+	"ServiceCategories": null,&#xd;
+	"ServiceSubCategories": null,&#xd;
+	"success": true,&#xd;
+	"result": null,&#xd;
+	"statusdescription": "SUCCESS",&#xd;
+	"fullexception": null&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:Cities"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="------Filter------"/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <propertyGroup>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                <property expression="json-eval($.Cities)" name="Cities" scope="default" type="STRING"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"Cities":&#xd;
+{&#xd;
+"City":$1&#xd;
+}&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Cities"/>
+                </args>
+            </payloadFactory>
+            <log level="full" separator="Afterpayload====="/>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http: //www.w3.org/2001/XMLSchema-instance">
+                        <success>$2</success>
+                        <statusdescription>$3</statusdescription>
+$1
+</LookupOutputParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Cities"/>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+            <log level="full" separator="  -------elseloginfilter-------"/>
+        </else>
+    </filter>
+</sequence>

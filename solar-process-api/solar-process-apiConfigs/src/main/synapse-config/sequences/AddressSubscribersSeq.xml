@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="AddressSubscribersSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.buildingnumber')" name="buildingnumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.additionalnumber')" name="additionalnumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.zipcode')" name="zipcode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="AddressSubcribers"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="boolean(($ctx:buildingnumber)and($ctx:zipcode)and($ctx:additionalnumber))">
+        <then/>
+        <else>
+            <script language="js"><![CDATA[var buildingnumber=mc.getProperty("buildingnumber");
+var zipcode=mc.getProperty("zipcode");
+var additionalnumber=mc.getProperty("additionalnumber");
+if(buildingnumber==null && zipcode==null && additionalnumber==null)
+{
+    var response={
+    "success":"false",
+    "result":null,
+    "statusdescription":" parameters values can't be empty",
+    "fullexception":null
+}
+
+}
+else
+{
+if(buildingnumber)
+{
+
+}
+else{
+    var response={
+"Subscriber":null,
+    "success":"false",
+    "result":null,
+    "statusdescription":"please enter building number",
+    "fullexception":null
+}}
+
+if(zipcode)
+{
+
+}
+else{
+    var response={
+"Subscriber":null,
+    "success":"false",
+    "result":null,
+    "statusdescription":"please enter zipcode ",
+    "fullexception":null
+}}
+if(additionalnumber)
+{
+
+}
+else{
+    var response={
+"Subscriber":null,
+    "success":"false",
+    "result":null,
+    "statusdescription":"please enter additionalnumber ",
+    "fullexception":null
+}}}
+mc.setPayloadJSON(response);]]></script>
+            <payloadFactory media-type="json">
+                <format>$1</format>
+                <args>
+                    <arg evaluator="json" expression="$"/>
+                </args>
+            </payloadFactory>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <NationalAddressSubscribers xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>$1</statusdescription>
+                            </NationalAddressSubscribers>
+                        </format>
+                        <args>
+                            <arg evaluator="json" expression="$.statusdescription"/>
+                        </args>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"buildingnumber":"$1",&#xd;
+"additionalnumber":"$2",&#xd;
+"zipcode":"$3",&#xd;
+"UserName":"$4",&#xd;
+"Password":"$5"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:buildingnumber"/>
+            <arg evaluator="xml" expression="$ctx:additionalnumber"/>
+            <arg evaluator="xml" expression="$ctx:zipcode"/>
+            <arg evaluator="xml" expression="$ctx:UserName"/>
+            <arg evaluator="xml" expression="$ctx:Password"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="AddressSubcribersEP"/>
+    </call>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log level="full" separator=" *********** ProcessAPIAfterEP*********  "/>
+    <script language="js"><![CDATA[var payload=mc.getPayloadJSON();
+var fun=constructGetCustomerWasel();
+if(payload.getCustomerFullNameV2Response.getCustomerFullNameV2Result.Status==1)
+{
+var transform = {
+"Subscriber":fun,
+"success": true,
+"result": null,
+"statusdescription": null,
+"fullexception": null
+};
+}
+else
+{
+var transform = {
+"Subscriber":null,
+"success": false,
+"result": null,
+"statusdescription": "صالحه محمد يحي دغريري",
+"fullexception": null
+};
+}
+function constructGetCustomerWasel() {
+var Address=[];
+
+ 
+
+ 
+
+for(i=0;i<payload.getCustomerFullNameV2Response.getCustomerFullNameV2Result.CustomerNameUnitNos.CustomerNameUnitNo.length;i++) {
+var d=payload.getCustomerFullNameV2Response.getCustomerFullNameV2Result.CustomerNameUnitNos.CustomerNameUnitNo[i];
+var data = {
+
+ 
+
+ 
+
+Name: (null !=d.FullNames?d.FullNames :""),
+UnitNo: (null !=d.UnitNo?d.UnitNo :""),
+NationalID: (null !=d.PID?d.PID :"")
+}
+Address.push(data);
+};
+return Address;
+}
+mc.setPayloadJSON(transform);]]></script>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <propertyGroup>
+                <property expression="json-eval($.Subscriber)" name="Subscriber" scope="default" type="STRING"/>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.result)" name="result" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                <property expression="json-eval($.fullexception)" name="fullexception" scope="default" type="STRING"/>
+            </propertyGroup>
+            <filter regex="true" source="$ctx:success">
+                <then/>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <NationalAddressSubscribers xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>إدخال غير صالح</statusdescription>
+                            </NationalAddressSubscribers>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+    "Subscriber": {&#xd;
+        "Subscriber": $1&#xd;
+    }&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Subscriber"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <NationalAddressSubscribers xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>$1</success>
+$2
+</NationalAddressSubscribers>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Subscriber"/>
+                </args>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            </propertyGroup>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

@@ -1,0 +1,22 @@
+map_S_root_S_root = function(){ 
+var outputroot={};
+
+var count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67 = 0;
+outputroot =  {};
+outputroot.Cities =  [];
+
+for(i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67 in inputroot.Cities.city){
+outputroot.Cities[count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67] =  {};
+outputroot.Cities[count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].Id = inputroot.Cities.city[i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].CITY_ID;
+outputroot.Cities[count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].Name = inputroot.Cities.city[i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].CityAlias;
+outputroot.Cities[count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].GovernorateName = inputroot.Cities.city[i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67].GovernorateName;
+
+count_i_city_3ab7b8b4_e1c0_4416_93bf_1742083f2c67++;
+}
+return outputroot;
+};
+
+
+
+
+

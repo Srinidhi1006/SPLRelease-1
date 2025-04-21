@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="SolarSystemApiEP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/SolarSystemApiEP.xml</file>
+    </artifact>
+    <artifact name="SolarProcessAPI" groupId="com.spl.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/SolarProcessAPI.xml</file>
+    </artifact>
+    <artifact name="AddressByIDSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByIDSeq.xml</file>
+    </artifact>
+    <artifact name="AddressByCRSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByCRSeq.xml</file>
+    </artifact>
+    <artifact name="GeoCodeByShortAddressSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GeoCodeByShortAddressSeq.xml</file>
+    </artifact>
+    <artifact name="NationalAddressByShortAddressSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/NationalAddressByShortAddressSeq.xml</file>
+    </artifact>
+    <artifact name="NationalAddressForIndividualsSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/NationalAddressForIndividualsSeq.xml</file>
+    </artifact>
+    <artifact name="PapiOutSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/PapiOutSeq.xml</file>
+    </artifact>
+    <artifact name="PapiFaultSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/PapiFaultSeq.xml</file>
+    </artifact>
+    <artifact name="FullNationalAddressByShortAddressSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/FullNationalAddressByShortAddressSeq.xml</file>
+    </artifact>
+    <artifact name="GeoCodeByNationalAddressSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/GeoCodeByNationalAddressSeq.xml</file>
+    </artifact>
+    <artifact name="AddressByCrSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByCRSeq.xml</file>
+    </artifact>
+    <artifact name="FullNationalAddressByShortAddressSeqValidator" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/FullNationalAddressByShortAddressSeqValidator.xml</file>
+    </artifact>
+    <artifact name="DbFaultSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DbFaultSeq.xml</file>
+    </artifact>
+    <artifact name="DbOutSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DbOutSeq.xml</file>
+    </artifact>
+    <artifact name="ZoneByCRNumberForInsurance" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ZoneByCRNumberForInsurance.xml</file>
+    </artifact>
+    <artifact name="ZoneByCRNumberSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ZoneByCRNumberSeq.xml</file>
+    </artifact>
+    <artifact name="ZoneByIDForInsuranceSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ZoneByIDForInsuranceSeq.xml</file>
+    </artifact>
+    <artifact name="ZoneByIDSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ZoneByIDSeq.xml</file>
+    </artifact>
+    <artifact name="DatabaseSystemApiCR_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DatabaseSystemApiCR_EP.xml</file>
+    </artifact>
+    <artifact name="DatabaseSystemApiID_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DatabaseSystemApiID_EP.xml</file>
+    </artifact>
+    <artifact name="ZoneByIDandCRSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/ZoneByIDandCRSeq.xml</file>
+    </artifact>
+    <artifact name="DatabaseSystemApiCR_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DatabaseSystemApiCR_EP.xml</file>
+    </artifact>
+    <artifact name="DatabaseSystemApiID_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DatabaseSystemApiID_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPAutoComplete_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPAutoComplete_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPOutSequence" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPOutSequence.xml</file>
+    </artifact>
+    <artifact name="AutoCompletefeature" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AutoCompletefeature.xml</file>
+    </artifact>
+    <artifact name="AutoCompleteDistrictSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AutoCompleteDistrictSys_EP.xml</file>
+    </artifact>
+    <artifact name="AutoCompleteStreetSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AutoCompleteStreetSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPDistricts_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPDistricts_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPDistricts_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPDistricts_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPRegion_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPRegion_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPCities_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPCities_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPCitiesSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPCitiesSys_EP.xml</file>
+    </artifact>
+    <artifact name="RegionsSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/RegionsSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPServiceCategories_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPServiceCategories_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPServiceCategorySys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPServiceCategorySys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPServiceSubCategories" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPServiceSubCategories.xml</file>
+    </artifact>
+    <artifact name="DBSPServiceSubCategorySys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPServiceSubCategorySys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPFixedSearch_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPFixedSearch_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPFixedSearchSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPFixedSearchSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPFreeTextSearch_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPFreeTextSearch_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPFreeTextSearchSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPFreeTextSearchSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPGetFeatureExtents_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPGetFeatureExtents_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPGetFeatureExtentsSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPGetFeatureExtentsSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPNearestPOI_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPNearestPOI_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPNearaestPOISys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPNearaestPOISys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPPOIFixedSearch" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPPOIFixedSearch.xml</file>
+    </artifact>
+    <artifact name="POISFixedSearchSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/POISFixedSearchSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPPOIFixedSearchSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPPOIFixedSearchSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPPOIFreeTextSearch_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPPOIFreeTextSearch_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPPOIFreeTextSearchSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPPOIFreeTextSearchSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPVerifyanAddress" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPVerifyanAddress.xml</file>
+    </artifact>
+    <artifact name="DBSPVerifyAnAddressByPKSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPVerifyAnAddressByPKSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPVerifyByPKAddressID_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPVerifyByPKAddressID_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPSearchByPKAddressID" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPSearchByPKAddressID.xml</file>
+    </artifact>
+    <artifact name="DBSPSearchAddressByPKAddressIDSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPSearchAddressByPKAddressIDSys_EP.xml</file>
+    </artifact>
+    <artifact name="DBSPBulkSearch_Seq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/DBSPBulkSearch_Seq.xml</file>
+    </artifact>
+    <artifact name="DBSPBulkSys_EP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/DBSPBulkSys_EP.xml</file>
+    </artifact>
+    <artifact name="AddressByPhoneSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByPhoneSeq.xml</file>
+    </artifact>
+    <artifact name="AddressSubscribersSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressSubscribersSeq.xml</file>
+    </artifact>
+    <artifact name="AddressByPhoneWithPinCodeGetpincodeSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByPhoneWithPinCodeGetpincodeSeq.xml</file>
+    </artifact>
+    <artifact name="AddressByPhoneWithPinCodeGetNAbyusingpincodeSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AddressByPhoneWithPinCodeGetNAbyusingpincodeSeq.xml</file>
+    </artifact>
+    <artifact name="AddressByPhoneEP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AddressByPhoneEP.xml</file>
+    </artifact>
+    <artifact name="AddressSubcribersEP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AddressSubcribersEP.xml</file>
+    </artifact>
+    <artifact name="AllAddressByCrNumberEP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/AllAddressByCrNumberEP.xml</file>
+    </artifact>
+    <artifact name="GetAddressEp" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/GetAddressEp.xml</file>
+    </artifact>
+    <artifact name="SendPincodeEP" groupId="com.spl.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/SendPincodeEP.xml</file>
+    </artifact>
+    <artifact name="CrmOutSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/CrmOutSeq.xml</file>
+    </artifact>
+    <artifact name="CrmFaultSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/CrmFaultSeq.xml</file>
+    </artifact>
+    <artifact name="AllAddressesByCRNumberSeq" groupId="com.spl.sequence" version="1.0.0" type="synapse/sequence" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/sequences/AllAddressesByCRNumberSeq.xml</file>
+    </artifact>
+</artifacts>

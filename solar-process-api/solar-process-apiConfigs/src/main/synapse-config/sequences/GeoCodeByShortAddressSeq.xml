@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="GeoCodeByShortAddressSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <!--This is generated API skeleton.-->
+    <!--Business Logic Goes Here-->
+    <propertyGroup>
+        <property expression="get-property('query.param.shortaddress')" name="shortaddress" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.page')" name="page" scope="default" type="STRING"/>
+        <property expression="translate(get-property('language'), ' ', '')" name="language" scope="default" type="STRING"/>
+    </propertyGroup>
+    <filter regex="true" source="boolean($ctx:page)">
+        <then/>
+        <else>
+            <property name="page" scope="default" type="STRING" value="1"/>
+        </else>
+    </filter>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="GeoShortaddress"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/Geocode/geocode-byshortaddress"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property expression="$ctx:format" name="CommonLogMessageType" scope="default" type="STRING"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="POST -/fetchByQuery"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="boolean(get-property('query.param.shortaddress'))">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "success": false,&#xd;
+    "statusdescription": "Invalid Short Address, please try again"&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "success": false,&#xd;
+    "statusdescription": "Invalid Short Address, please try again"&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+    "Query": "$1",&#xd;
+    "CorelationId": "71eac955-d14b-4e26-b71a-c8d18c8bb4c9",&#xd;
+    "SolrObject": "NA",&#xd;
+    "Language":"$2",&#xd;
+    "RequestFrom": "GeocodeByShortAddress",&#xd;
+    "start": $3,&#xd;
+    "rows": 10&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="fn:concat('+ShortAddress:',$ctx:shortaddress)"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:page"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="SolarSystemApiEP"/>
+    </call>
+    <propertyGroup>
+        <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="json-eval($.success)">
+        <then>
+            <log level="custom">
+                <property name="EndpointStatus" value="true"/>
+            </log>
+        </then>
+        <else>
+            <log level="custom">
+                <property name="EnddpointStatus" value="false"/>
+            </log>
+        </else>
+    </filter>
+    <filter xpath="$ctx:totalSearchResults>0">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </BusinessOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{ "totalSearchResults": "0", "Addresses": [], "success": false, "result": null, "statusdescription": "Invalid Short Address, please try again", "fullexception": null }</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </BusinessOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{ "totalSearchResults": "0", "KSABusinesses": [], "success": false, "result": null, "statusdescription": "Invalid Short Address, please try again", "fullexception": null }</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <script key="conf:scripts/GeocodeBySA.js" language="js"/>
+    <property expression="json-eval($.success)" name="succesStatus" scope="default" type="STRING"/>
+    <switch source="get-property('query.param.format')">
+        <case regex="xml">
+            <propertyGroup>
+                <property expression="json-eval($.Addresses)" name="Address" scope="default" type="STRING"/>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                <property expression="json-eval($.result)" name="result" scope="default" type="STRING"/>
+                <property expression="json-eval($.fullException)" name="fullException" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"Addresses": {"Address":$1}&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Address"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <totalSearchResults>$4</totalSearchResults>
+ $1
+<success>$2</success>
+                        <statusdescription>$3</statusdescription>
+                    </AddressOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                    <arg evaluator="xml" expression="$ctx:totalSearchResults"/>
+                </args>
+            </payloadFactory>
+        </case>
+        <case regex="json">
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </case>
+        <default>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </default>
+    </switch>
+</sequence>

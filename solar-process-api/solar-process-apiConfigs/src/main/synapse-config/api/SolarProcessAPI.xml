@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/papi/solr" name="SolarProcessAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="GET" uri-template="/addressbyid/national-id">
+        <inSequence>
+            <!--This is generated API skeleton.-->
+            <!--Business Logic Goes Here-->
+            <sequence key="AddressByIDSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/addressbycrnumber/cr-number">
+        <inSequence>
+            <sequence key="AddressByCRSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/geocodebyshortaddress">
+        <inSequence>
+            <sequence key="GeoCodeByShortAddressSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/nationaladdressbyshortaddress">
+        <inSequence>
+            <sequence key="NationalAddressByShortAddressSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/nationaladdressforindividuals">
+        <inSequence>
+            <sequence key="NationalAddressForIndividualsSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/fullnationaladdressbyshortaddress">
+        <inSequence>
+            <sequence key="FullNationalAddressByShortAddressSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/zonebyidandcr">
+        <inSequence>
+            <sequence key="ZoneByIDandCRSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/GeoCodeByNationalAddress">
+        <inSequence>
+            <sequence key="GeoCodeByNationalAddressSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="PapiOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="PapiFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/zonebycrnumber/cr-number">
+        <inSequence>
+            <sequence key="ZoneByCRNumberSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DbOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/zonebycrnumberforinsurance/cr-number">
+        <inSequence>
+            <sequence key="ZoneByCRNumberForInsurance"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DbOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/zonebyid/national-id">
+        <inSequence>
+            <sequence key="ZoneByIDSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DbOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" uri-template="/zonebyidforinsurance/national-id">
+        <inSequence>
+            <sequence key="ZoneByIDForInsuranceSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DbOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/autocomplete/autocomplete">
+        <inSequence>
+            <sequence key="DBSPAutoComplete_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/lookup/districts">
+        <inSequence>
+            <sequence key="DBSPDistricts_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/lookup/cities">
+        <inSequence>
+            <sequence key="DBSPCities_Seq"/>
+            <loopback description="d"/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/lookup/regions">
+        <inSequence>
+            <sequence key="DBSPRegion_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/lookup/service-categories">
+        <inSequence>
+            <sequence key="DBSPServiceCategories_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/lookup/services-sub-categories">
+        <inSequence>
+            <sequence key="DBSPServiceSubCategories"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/address-fixed-params">
+        <inSequence>
+            <sequence key="DBSPFixedSearch_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/address-free-text">
+        <inSequence>
+            <sequence key="DBSPFreeTextSearch_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/get-feature-extents">
+        <inSequence>
+            <sequence key="DBSPGetFeatureExtents_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/poi-nearest">
+        <inSequence>
+            <sequence key="DBSPNearestPOI_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/poi-fixed-params">
+        <inSequence>
+            <sequence key="DBSPPOIFixedSearch"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/poi-free-text">
+        <inSequence>
+            <sequence key="DBSPPOIFreeTextSearch_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/address-verify">
+        <inSequence>
+            <sequence key="DBSPVerifyanAddress"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addressbypkaddressid/verifyaddressbypkaddressid">
+        <inSequence>
+            <sequence key="DBSPVerifyByPKAddressID_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addressbypkaddressid/searchaddressbypkaddressid">
+        <inSequence>
+            <sequence key="DBSPSearchByPKAddressID"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/address/address-bulk">
+        <inSequence>
+            <sequence key="DBSPBulkSearch_Seq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="DbFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addressbyphone/phone">
+        <inSequence>
+            <sequence key="AddressByPhoneSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="CrmOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CrmFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addresssubscribers/subscribers-info">
+        <inSequence>
+            <sequence key="AddressSubscribersSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="CrmOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CrmFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addressbyphonewithpincode/updsapi/api/otp/getpincode">
+        <inSequence>
+            <sequence key="AddressByPhoneWithPinCodeGetpincodeSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="CrmOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CrmFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/addressbyphonewithpincode/updsapi/api/otp/getaddresses">
+        <inSequence>
+            <sequence key="AddressByPhoneWithPinCodeGetNAbyusingpincodeSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="CrmOutSeq"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CrmFaultSeq"/>
+        </faultSequence>
+    </resource>
+    <resource methods="GET" url-mapping="/alladdressesbycrnumber/cr-number">
+        <inSequence>
+            <sequence key="AllAddressesByCRNumberSeq"/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <sequence key="DBSPOutSequence"/>
+        </outSequence>
+        <faultSequence>
+            <sequence key="CrmFaultSeq"/>
+        </faultSequence>
+    </resource>
+</api>

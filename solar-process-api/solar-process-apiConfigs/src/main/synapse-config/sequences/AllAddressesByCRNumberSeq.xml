@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="AllAddressesByCRNumberSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.crnumber')" name="crnumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="AllAddressByCrNumber"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/AllAddressByCrNumber"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/AllAddressByCrNumber"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="true" source="boolean(get-property('query.param.language'))">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    <filter regex="true" source="boolean(get-property('query.param.crnumber'))">
+        <then>
+            <filter regex="^[0-9]{10}" source="$ctx:crnumber">
+                <then/>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>please enter valid crnumber</statusdescription>
+                                    </BusinessOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                        </then>
+                        <else>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "success":"false",&#xd;
+    "result":null,&#xd;
+    "statusdescription":"please enter valid crnumber",&#xd;
+    "fullexception":null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                        </else>
+                    </filter>
+                    <loopback/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>please enter crnumber</statusdescription>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/ml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter  crnumber",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"language": "$1",&#xd;
+"format": "$2",&#xd;
+"crnumber": "$3"&#xd;
+}&#xd;
+</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:format"/>
+            <arg evaluator="xml" expression="$ctx:crnumber"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="AllAddressByCrNumberEP"/>
+    </call>
+    <log level="full" separator="***logAfterEp****"/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload = mc.getPayloadJSON();
+var log=mc.getServiceLog();
+var language = mc.getProperty("language");
+  log.info(language);
+if(Object.keys(payload.GetCustomerWaselNotCancelledResponse.subscriptionTypeModel).length > 0)
+{ 
+    var Addresses = constructAddress(language);
+      var transform = {
+"totalSearchResults":payload.GetCustomerWaselNotCancelledResponse.subscriptionTypeModel.SubscriptionTypeModel.length.toFixed(),
+    "KSABusiness":Addresses,
+    "success": "true",
+    "result": null,
+    "statusdescription": "SUCCESS",
+    "fullexception": null
+  };
+}
+else
+{
+var transform = {
+    "totalSearchResults": null,
+    "KSABusinesses": null,
+    "success": false,
+    "result": null,
+    "statusdescription": "No data found",
+    "fullexception": null
+};
+}
+mc.setPayloadJSON(transform);
+
+ 
+
+function constructAddress(lang) {
+     var address=[];
+for (i = 0; i < payload.GetCustomerWaselNotCancelledResponse.subscriptionTypeModel.SubscriptionTypeModel.length; ++i) {
+d = payload.GetCustomerWaselNotCancelledResponse.subscriptionTypeModel.SubscriptionTypeModel[i];
+
+ 
+
+var english = {
+            "Title":(null !=d.CustomerNameinEN?d.CustomerNameinEN :null),
+"Address1":(null !=d.BuildingNo?d.BuildingNo :null)+" "+ (null !=d.Street?d.Street :null)+"-"+(null !=d.District?d.District :null),
+"Address2":(null !=d.City?d.City :null)+" "+ (null !=d.PostCode?d.PostCode :null)+"-"+(null !=d.AdditionalNumber?d.AdditionalNumber :null),
+"ObjLatLng": (null !=d.ObjLatLng?d.ObjLatLng :null),
+"BuildingNumber": (null !=d.BuildingNo?d.BuildingNo :null),
+"Street":  (null !=d.StreetNameEN?d.StreetNameEN :null),
+"District": (null !=d.DistrictNameEN?d.DistrictNameEN :null),
+"City": (null !=d.CityNameEN?d.CityNameEN :null),
+"PostCode": (null !=d.ZipCode?d.ZipCode :null),
+"AdditionalNumber": (null !=d.AdditionalNumber?d.AdditionalNumber :null),
+"RegionName": (null !=d.RegionNameEN?d.RegionNameEN :null),
+"PolygonString": null,
+"IsPrimaryAddress": (null !=d.IsDefaultAddress?d.IsDefaultAddress :null),
+"UnitNumber": (null !=d.UnitNo?d.UnitNo :null),
+"Latitude": (null !=d.Latitude?d.Latitude :null),
+"Longitude": (null !=d.Longitude?d.Longitude :null),
+"CityId": (null !=d.CityId?d.CityId :null),
+"RegionId":  (null !=d.RegionId?d.RegionId :null),
+"Restriction": (null !=d.restriction?d.restriction :null),
+"PKAddressID": (null !=d.PKAddressID?d.PKAddressID :null),
+"DistrictID": (null !=d.DistrictID?d.DistrictID :null),
+"Title_L2":  (null !=d.CustomerNameinAR?d.CustomerNameinAR :null),
+"RegionName_L2": (null !=d.RegionNameAR?d.RegionNameAR :null),
+"City_L2": (null !=d.CityNameAR?d.CityNameAR :null),
+"Street_L2":  (null !=d.StreetNameAR?d.StreetNameAR :null),
+"District_L2": (null !=d.DistrictNameAR?d.DistrictNameAR :null),
+"CompanyName_L2": (null !=d.CompanyNameAR?d.CompanyNameEN :null),
+"GovernorateID": (null !=d.GovernorateID?d.GovernorateID :null),
+"Governorate": (null !=d.Governorate?d.Governorate :null),
+"Governorate_L2": (null !=d.Governorate_L2?d.Governorate_L2 :null),
+
+            }
+
+ 
+
+            var ar = {
+               "Title":(null !=d.CustomerNameinAR?d.CustomerNameinAR :null),
+"Address1":(null !=d.BuildingNo?d.BuildingNo :null)+" "+ (null !=d.Street?d.Street :null)+"-"+(null !=d.District?d.District :null),
+"Address2":(null !=d.City?d.City :null)+" "+ (null !=d.PostCode?d.PostCode :null)+"-"+(null !=d.AdditionalNumber?d.AdditionalNumber :null),
+"ObjLatLng": (null !=d.ObjLatLng?d.ObjLatLng :null),
+"BuildingNumber": (null !=d.BuildingNo?d.BuildingNo :null),
+"Street":  (null !=d.StreetNameAR?d.StreetNameAR :null),
+"District": (null !=d.DistrictNameAR?d.DistrictNameAR :null),
+"City": (null !=d.CityNameAR?d.CityNameAR :null),
+"PostCode": (null !=d.ZipCode?d.ZipCode :null),
+"AdditionalNumber": (null !=d.AdditionalNumber?d.AdditionalNumber :null),
+"RegionName": (null !=d.RegionNameAR?d.RegionNameAR :null),
+"PolygonString": null,
+"IsPrimaryAddress": (null !=d.IsDefaultAddress?d.IsDefaultAddress :null),
+"UnitNumber": (null !=d.UnitNo?d.UnitNo :null),
+"Latitude": (null !=d.Latitude?d.Latitude :null),
+"Longitude": (null !=d.Longitude?d.Longitude :null),
+"CityId": (null !=d.CityId?d.CityId :null),
+"RegionId":  (null !=d.RegionId?d.RegionId :null),
+"Restriction": (null !=d.restriction?d.restriction :null),
+"PKAddressID": (null !=d.PKAddressID?d.PKAddressID :null),
+"DistrictID": (null !=d.DistrictID?d.DistrictID :null),
+"Title_L2":  (null !=d.CustomerNameinEng?d.CustomerNameinEng :null),
+"RegionName_L2": (null !=d.RegionNameEN?d.RegionNameEN :null),
+"City_L2": (null !=d.CityNameEN?d.CityNameEN :null),
+"Street_L2":  (null !=d.StreetNameEN?d.StreetNameEN :null),
+"District_L2": (null !=d.DistrictNameEN?d.DistrictNameEN :null),
+"CompanyName_L2": (null !=d.CompanyNameEN?d.CompanyNameEN :null),
+"GovernorateID": (null !=d.GovernorateID?d.GovernorateID :null),
+"Governorate": (null !=d.Governorate?d.Governorate :null),
+"Governorate_L2": (null !=d.Governorate_L2?d.Governorate_L2 :null),
+
+            };
+             var data = lang.toLowerCase()=='e'?english:ar;
+            address.push(data);
+
+ 
+
+
+}
+return address;
+    }]]></script>
+    <log level="full" separator="LogAfterCall"/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="true" source="json-eval($.success)">
+                <then/>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>No data found</statusdescription>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contantType " scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var log= mc.getServiceLog();
+var KSABusiness = {
+    "totalSearchResults":input.totalSearchResults,
+    "KSABusiness": constructAddress()
+}
+
+ 
+
+mc.setPayloadJSON(KSABusiness);
+
+ 
+
+   function constructAddress() {
+        var Addresses=[];
+         for (j = 0; j < input.KSABusiness.length; j++) {
+              var address={};
+      var payload = input.KSABusiness[j];
+      var payloadArray = objectValues(payload);
+       log.info(payloadArray);
+for (i = 0; i < payloadArray.length; i++) {
+    if(payloadArray[i] != null)
+  {
+    var key = Object.keys(payload)[i];
+     var value = payloadArray[i];
+    address[key] = value ;
+  }
+}
+Addresses.push(address);
+}
+        return Addresses;
+    }
+
+ 
+
+function objectValues(obj) {
+    var vals = [];
+    for (prop in obj) {
+        vals.push(obj[prop]);
+    }
+    return vals;
+};
+
+ 
+
+log.info(KSABusiness);]]></script>
+            <propertyGroup>
+                <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+                <property expression="json-eval($.KSABusiness)" name="KSABusiness" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"KSABusinesses":{"KSABusiness":$1}&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:KSABusiness"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>true</success>
+                        <statusdescription>SUCCESS</statusdescription>
+                        <totalSearchResults>$2</totalSearchResults>
+$1
+</BusinessOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/KSABusinesses"/>
+                    <arg evaluator="xml" expression="$ctx:totalSearchResults"/>
+                </args>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

@@ -1,0 +1,49 @@
+{
+  "$schema" : "http://wso2.org/json-schema/wso2-data-mapper-v5.0.0/schema#",
+  "inputType" : "JSON",
+  "id" : "http://wso2jsonschema.org",
+  "title" : "root",
+  "type" : "object",
+  "properties" : {
+    "Cities" : {
+      "id" : "http://wso2jsonschema.org/Cities",
+      "type" : "object",
+      "properties" : {
+        "city" : {
+          "id" : "http://wso2jsonschema.org/Cities/city",
+          "type" : "array",
+          "items" : [ {
+            "id" : "http://wso2jsonschema.org/Cities/city/0",
+            "type" : "object",
+            "properties" : {
+              "CENTROID_Y" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/CENTROID_Y",
+                "type" : "string"
+              },
+              "MAPNAME" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/MAPNAME",
+                "type" : "string"
+              },
+              "CITY_ID" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/CITY_ID",
+                "type" : "string"
+              },
+              "CENTROID_X" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/CENTROID_X",
+                "type" : "string"
+              },
+              "GovernorateName" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/GovernorateName",
+                "type" : "string"
+              },
+              "CityAlias" : {
+                "id" : "http://wso2jsonschema.org/Cities/city/0/CityAlias",
+                "type" : "string"
+              }
+            }
+          } ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPVerifyanAddress" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.buildingnumber')" name="buildingnumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.additionalnumber')" name="additionalnumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.zipcode')" name="zipcode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="verifyanaddress"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/Address/verifyanaddress"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/Address/verifyanaddress"/>
+    </propertyGroup>
+    <log level="custom">
+        <property name="Entry == " value="Entry"/>
+    </log>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <!--  <filter regex="true" source="boolean(get-property('query.param.addressid'))">
+        <then/>
+        <else>
+            <log level="custom">
+                <property expression="get-property('query.param.addressid')" name="addressid"/>
+            </log>
+            <payloadFactory media-type="json">
+                <format>{"Message" : "Please enter valid addressid"}</format>
+                <args/>
+            </payloadFactory>
+            <respond/>
+        </else>
+    </filter> -->
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"buildingnumber":"$1",&#xd;
+"zipcode":"$2",&#xd;
+"additionalnumber":"$3"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:buildingnumber"/>
+            <arg evaluator="xml" expression="$ctx:zipcode"/>
+            <arg evaluator="xml" expression="$ctx:additionalnumber"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator=" --BeforeSysAPIEP-- "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPVerifyAnAddressByPKSys_EP"/>
+    </call>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <property expression="json-eval($.Response.Status.validStatus)" name="validStatus" scope="default" type="STRING"/>
+    <filter xpath="$ctx:validStatus='1'">
+        <then>
+            <property name="addressfound" scope="default" type="STRING" value="true"/>
+        </then>
+        <else>
+            <property name="addressfound" scope="default" type="STRING" value="false"/>
+        </else>
+    </filter>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <payloadFactory media-type="xml">
+                <format>
+                    <VerifyAddressResult xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>true</success>
+                        <addressfound>$1</addressfound>
+                    </VerifyAddressResult>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:addressfound"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+    "addressfound": $1,&#xd;
+    "success": true,&#xd;
+    "result": null,&#xd;
+    "statusdescription": null,&#xd;
+    "fullexception": null&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:addressfound"/>
+                </args>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+    <log level="full" separator=" --LastLog-- "/>
+</sequence>

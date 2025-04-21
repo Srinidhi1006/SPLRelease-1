@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="AddressByPhoneSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.phone')" name="phone" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="AddressSubcribers"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log level="full" separator="****LogBeforeFilter***********"/>
+    <filter regex="true" source="boolean(get-property('query.param.language'))">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    <filter regex="true" source="boolean($ctx:phone)">
+        <then>
+            <filter regex="^966([0-9]{9})$|^05([0-9]{10})$" source="$ctx:phone">
+                <then/>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressByPhoneWithOutPincode xmlns="">
+                                        <success>false</success>
+                                        <statusdescription>please enter  valid mobile number</statusdescription>
+                                    </AddressByPhoneWithOutPincode>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                        </then>
+                        <else>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter  valid mobile number",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                        </else>
+                    </filter>
+                    <loopback/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <IqamaOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>please enter mobile number</statusdescription>
+                            </IqamaOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter mobile number",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"phone":"$1",&#xd;
+"language":"$2",&#xd;
+"Format":"$3",&#xd;
+"encode":"$4"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:phone"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:Format"/>
+            <arg evaluator="xml" expression="$ctx:encode"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log level="full" separator="***LogBeforeEP**"/>
+    <call>
+        <endpoint key="AddressByPhoneEP"/>
+    </call>
+    <log level="full" separator="***LogAfterEP***"/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload=mc.getPayloadJSON();
+var log=mc.getServiceLog();
+var language = mc.getProperty("language");
+  log.info(language);
+var Addresses = constructAddress(language);
+if(Object.keys(payload.waselAddressDetails).length>0)
+
+    {
+
+      var transform = {
+
+"PersonName": "",
+
+    "totalSearchResults": payload.waselAddressDetails.length.toFixed(),
+
+    "Addresses": Addresses,
+
+    "PostCode": null,
+
+    "Success": true,
+
+    "result": null,
+
+    "Statusdescription": "success",
+
+    "fullexception": null,
+
+
+};
+
+    }
+
+    else{
+
+        var transform = {
+
+    "PersonName": null,
+
+    "totalSearchResults": null,
+
+    "Addresses": null,
+
+    "PostCode": null,
+
+    "success": false,
+
+    "result": null,
+
+    "statusdescription": "Phone number does not exist.",
+
+    "fullexception": null
+
+};
+
+    }
+
+mc.setPayloadJSON(transform);
+    function constructAddress(lang) {
+
+     var address=[];
+
+ 
+
+for (i = 0; i < payload.waselAddressDetails.length; ++i) {
+
+d = payload.waselAddressDetails[i];
+
+ 
+
+var english = {
+
+                Title: null,
+
+                Address1 : (null != d.LocationX?d.LocationX:"" )+ " "+( null != d.DistrictNameEN?(d.DistrictNameEN):"")+" - "+(null != d.Street_NameEn?(d.Street_NameEn):""),
+
+Address2: (null != d.LocationY?d.LocationY:"" )+" - "+( null != d.LocationZ ?d.LocationZ:"")+" "+(null != d.CityNameEn?d.CityNameEn:""),                
+
+ObjLatLng: ( null != d.Longitude?d.Longitude+" ":"")+ (null != d.Latitude?d.Latitude:"" ),
+
+                BuildingNumber: (null != d.LocationX? d.LocationX:""),
+
+                Street: ( null !=  d.Street_NameEn?(d.Street_NameEn) :""),
+
+                District: ( null !=  d.DistrictNameEN?(d.DistrictNameEN) :""),
+
+                City:  ( null !=  d.CityNameEn?d.CityNameEn :""),
+
+                PostCode: ( null !=  d.LocationZ?d.LocationZ :""),
+
+                AdditionalNumber: ( null !=  d.LocationY?d.LocationY :""),
+
+                RegionName: ( null !=  d.CityName?d.CityName :""),
+
+                PolygonString:  ( null !=d.PolygonString?d.PolygonString :null),
+
+               IsPrimaryAddress: ( null !=  d.IsDefaultAddress?d.IsDefaultAddress:""),
+
+                UnitNumber: ( null !=  d.UnitNo?d.UnitNo :""),
+
+             Latitude: ( null !=  d.Latitude?d.Latitude :""),
+
+               Longitude: ( null != d.Longitude?d.Longitude:""),
+
+                CityId: ( null !=  d.GISCityID?d.GISCityID [0] :""),
+
+                RegionId: null,
+
+                Restriction: null,
+
+                PKAddressID: ( null !=  d.locationz?d.locationz :"")+(null != d.LocationY?d.LocationY :"")+  (null != d.LocationX?d.LocationX :""),
+
+                DistrictID: null,
+
+                Title_L2:null,
+
+                RegionName_L2: (null != d.RegionNameAR ? d.RegionNameAR :""),
+
+                City_L2: (null != d.CityName ?d.CityName:""),
+
+                Street_L2: (null !=d.StreetName? d.StreetName:""),
+
+                District_L2: (null != d.DistrictName ?d.DistrictName :""),
+
+                CompanyName_L2: null,
+
+                GovernorateID: "",
+
+                Governorate: null,
+
+                Governorate_L2: null
+
+ 
+
+            }
+
+ 
+
+ 
+
+            var ar = {
+
+                 Title: null,
+
+                Address1 : (null != d.LocationX?d.LocationX:"" )+ " "+( null != d.DistrictName?(d.DistrictName):"")+" - "+(null != d.StreetName?(d.StreetName):""),
+
+Address2: (null != d.LocationY?d.LocationY:"" )+" - "+( null != d.LocationZ ?d.LocationZ:"")+" "+(null != d.CityName?d.CityName:""),                
+
+ObjLatLng: ( null != d.Longitude?d.Longitude+" ":"")+ (null != d.Latitude?d.Latitude:"" ),
+
+                BuildingNumber: (null != d.LocationX? d.LocationX:""),
+
+                Street: ( null !=  d.StreetName?(d.StreetName) :""),
+
+                District: ( null !=  d.DistrictName?(d.DistrictName) :""),
+
+                City:  ( null !=  d.CityName?d.CityName :""),
+
+                PostCode: ( null !=  d.LocationZ?d.LocationZ :""),
+
+                AdditionalNumber: ( null !=  d.LocationY?d.LocationY :""),
+
+                RegionName: ( null !=  d.CityName?d.CityName :""),
+
+                PolygonString:  ( null !=d.PolygonString?d.PolygonString :null),
+
+               IsPrimaryAddress: ( null !=  d.IsDefaultAddress?d.IsDefaultAddress:""),
+
+                UnitNumber: ( null !=  d.UnitNo?d.UnitNo :""),
+
+             Latitude: ( null !=  d.Latitude?d.Latitude :""),
+
+               Longitude: ( null != d.Longitude?d.Longitude:""),
+
+                CityId: ( null !=  d.GISCityID?d.GISCityID [0] :""),
+
+                RegionId: null,
+
+                Restriction: null,
+
+                PKAddressID: ( null !=  d.locationz?d.locationz :"")+(null != d.LocationY?d.LocationY :"")+  (null != d.LocationX?d.LocationX :""),
+
+                DistrictID: null,
+
+                Title_L2:null,
+
+                RegionName_L2: (null != d.RegionNameAR ? d.RegionNameAR :""),
+
+                City_L2: (null != d.CityNameEn ?d.CityNameEn:""),
+
+                Street_L2: (null !=d.Street_NameEn? d.Street_NameEn:""),
+
+                District_L2: (null != d.DistrictNameEN?d.DistrictNameEN :""),
+
+                CompanyName_L2: null,
+
+                GovernorateID: "",
+
+                Governorate: null,
+
+                Governorate_L2: null
+
+            };
+             var data = lang.toLowerCase()=='e'?english:ar;
+
+            address.push(data);
+}
+
+return address;
+
+    }]]></script>
+    <log separator="******LogAfterS1****"/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="true" source="json-eval($.Success)">
+                <then/>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <IqamaOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>Phone number does not exist.</statusdescription>
+                            </IqamaOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var log= mc.getServiceLog();
+var Addresses = {
+    "PersonName": "",
+	 "totalSearchResults": input.totalSearchResults,
+	 "PostCode": null,
+    "Success": true,
+    "result": null,
+    "Statusdescription": "success",
+    "fullexception": null,
+    "Addresses": constructAddress()
+}
+
+ 
+
+mc.setPayloadJSON(Addresses);
+
+ 
+
+   function constructAddress() {
+        var addresses=[];
+         for (j = 0; j < input.Addresses.length; j++) {
+              var address={};
+      var payload = input.Addresses[j];
+      var payloadArray = objectValues(payload);
+       log.info(payloadArray);
+for (i = 0; i < payloadArray.length; i++) {
+    if(payloadArray[i] != null)
+  {
+    var key = Object.keys(payload)[i];
+     var value = payloadArray[i];
+    address[key] = value ;
+  }
+}
+addresses.push(address);
+}
+        return addresses;
+    }
+
+ 
+
+function objectValues(obj) {
+    var vals = [];
+    for (prop in obj) {
+        vals.push(obj[prop]);
+    }
+    return vals;
+};
+
+ 
+
+log.info(Addresses);]]></script>
+            <propertyGroup>
+                <property expression="json-eval($.PersonName)" name="PersonName" scope="default" type="STRING"/>
+                <property expression="json-eval($.totalSearchResults)" name="totalSearchResults" scope="default" type="STRING"/>
+                <property expression="json-eval($.PostCode)" name="PostCode" scope="default" type="STRING"/>
+                <property expression="json-eval($.Success)" name="Success" scope="default" type="STRING"/>
+                <property expression="json-eval($.result)" name="result" scope="default" type="STRING"/>
+                <property expression="json-eval($.Statusdescription)" name="Statusdescription" scope="default" type="STRING"/>
+                <property expression="json-eval($.fullexception)" name="fullexception" scope="default" type="STRING"/>
+                <property expression="json-eval($.Addresses)" name="Addresses" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"Addresses":{&#xd;
+"Address":$1}}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Addresses"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <PersonName>$2</PersonName>
+                        <totalSearchResults>$3</totalSearchResults>
+                        <PostCode>$4</PostCode>
+                        <Success>true</Success>
+                        <result>$5</result>
+                        <Statusdescription>$6</Statusdescription>
+                        <fullexception>$7</fullexception>
+$1
+</AddressOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:PersonName"/>
+                    <arg evaluator="xml" expression="$ctx:totalSearchResults"/>
+                    <arg evaluator="xml" expression="$ctx:PostCode"/>
+                    <arg evaluator="xml" expression="$ctx:Success"/>
+                    <arg evaluator="xml" expression="$ctx:result"/>
+                    <arg evaluator="xml" expression="$ctx:Statusdescription"/>
+                    <arg evaluator="xml" expression="$ctx:fullexception"/>
+                </args>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

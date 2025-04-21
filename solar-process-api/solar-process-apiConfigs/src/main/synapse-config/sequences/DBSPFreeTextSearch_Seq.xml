@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPFreeTextSearch_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityalias')" name="cityalias" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.districtalias')" name="districtalias" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.category')" name="category" scope="default" type="STRING"/>
+        <property expression="get-property('query.para,.cityids')" name="cityids" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.districtid')" name="districtid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.pageNumber')" name="pageNumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.regionid')" name="regionid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.addressstring')" name="addressstring" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="PAPFreeTextSearch"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/ProcessAPI/FreeTextSearch"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/ProcessAPI/FreeTextSearch"/>
+    </propertyGroup>
+    <script language="js"><![CDATA[var log=mc.getServiceLog();
+var uri = mc.getProperty("addressstring");
+var encoded = encodeURIComponent(uri);
+var decoded = decodeURIComponent(encoded);
+log.info("uri "+uri);
+log.info("encoded "+encoded);
+mc.setProperty("decoded",decoded);
+log.info("decoded  value is "+decoded);]]></script>
+    <property expression="get-property('decoded')" name="addressstring" scope="default" type="STRING"/>
+    <propertyGroup>
+        <property expression="fn:substring($ctx:addressstring, 1, 4)" name="buildingno" scope="default" type="STRING"/>
+        <property expression="fn:substring($ctx:addressstring, 6, 10)" name="zipcode" scope="default" type="STRING"/>
+        <property expression="fn:substring($ctx:addressstring, 12, 15)" name="additionalno" scope="default" type="STRING"/>
+        <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    </propertyGroup>
+    <script language="js"><![CDATA[var buildingno= mc.getProperty("buildingno")
+if(isNaN(buildingno))
+{
+var response={
+    "totalSearchResults": "0",
+    "Addresses": [],
+    "PostCode": null,
+    "success": true,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+}
+ mc.setPayloadJSON(response);
+}
+else
+{
+var isbuildingnovalid=true
+mc.setProperty("isbuildingnovalid",isbuildingnovalid);
+}
+var additionalno= mc.getProperty("additionalno")
+
+if(isNaN(additionalno))
+{
+var response={
+    "totalSearchResults": "0",
+    "Addresses": [],
+    "PostCode": null,
+    "success": true,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+}
+ mc.setPayloadJSON(response);
+}
+else
+{
+var isadditionalnovalid=true;
+mc.setProperty("isadditionalnovalid",isadditionalnovalid);
+}
+
+
+ var zipcode= mc.getProperty("zipcode")
+if(isNaN(zipcode))
+{
+var response=
+{
+    "totalSearchResults": "0",
+    "Addresses": [],
+    "PostCode": null,
+    "success": true,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+}
+ mc.setPayloadJSON(response);
+}
+else
+{
+var iszipcodevalid=true
+mc.setProperty("iszipcodevalid",iszipcodevalid);
+}]]></script>
+    <filter regex="true" source="boolean(get-property('isbuildingnovalid') and get-property('isadditionalnovalid') and get-property('iszipcodevalid'))">
+        <then/>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>true</success>
+                                <statusdescription>NO-RESULTS</statusdescription>
+                                <totalSearchResults>0</totalSearchResults>
+                            </AddressOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "PostCode": null,&#xd;
+    "success": true,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "NO-RESULTS",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var log=mc.getServiceLog();
+var buildingno=mc.getProperty("buildingno");
+log.info("buildingno  "+buildingno);
+var zipcode=mc.getProperty("zipcode");
+log.info("zipcode  "+zipcode);
+var additionalno =mc.getProperty("additionalno");
+log.info("additionalno  "+additionalno);
+
+ 
+if(additionalno!="")
+{
+additionalno=additionalno;
+}
+
+else
+{
+additionalno=0;
+}
+mc.setProperty("additionalno",additionalno.toFixed());
+log.info("after if additionalno  "+additionalno);
+
+
+if(zipcode!="")
+{
+zipcode=zipcode;
+mc.setProperty("zipcode",zipcode);
+}
+
+else
+{
+zipcode=0;
+mc.setProperty("zipcode",zipcode.toFixed);
+}
+log.info("after if zipcode  "+zipcode);
+
+if(buildingno!="")
+{
+buildingno=buildingno;
+mc.setProperty("buildingno",buildingno);
+
+}
+
+else
+{
+buildingno=0;
+mc.setProperty("buildingno",buildingno.toFixed());
+
+}
+log.info("after if buildingno  "+buildingno);]]></script>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"language":"$1",&#xd;
+"regionid":"$2",&#xd;
+"cityalias":"$3",&#xd;
+"buildingno":"$4",&#xd;
+"additionalno":"$5",&#xd;
+"zipcode":"$6",&#xd;
+"districtalias":"$7",&#xd;
+"street":"$8",&#xd;
+"streetdistrict":"$9",&#xd;
+"cityids":"$10",&#xd;
+"pageNumber":"$11",&#xd;
+"pagesize":"$12",&#xd;
+"Sortcol":"$13"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:regionid"/>
+            <arg evaluator="xml" expression="$ctx:cityalias"/>
+            <arg evaluator="xml" expression="get-property('buildingno')"/>
+            <arg evaluator="xml" expression="get-property('additionalno')"/>
+            <arg evaluator="xml" expression="get-property('zipcode')"/>
+            <arg evaluator="xml" expression="$ctx:districtalias"/>
+            <arg evaluator="xml" expression="$ctx:street"/>
+            <arg evaluator="xml" expression="$ctx:streetdistrict"/>
+            <arg evaluator="xml" expression="$ctx:cityids"/>
+            <arg evaluator="xml" expression="$ctx:pageNumber"/>
+            <arg evaluator="xml" expression="$ctx:pagesize"/>
+            <arg evaluator="xml" expression="$ctx:Sortcol"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log level="full" separator="  ****PAPIBfrEPfreeText*****    "/>
+    <call>
+        <endpoint key="DBSPFreeTextSearchSys_EP"/>
+    </call>
+    <log level="full" separator="    afterFreetextafter_EP"/>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+var Addresses = constructAddress();
+	var transform = {
+    "totalSearchResults": payload.totalSearchResults,
+	"Addresses":Addresses,
+	"PostCode":payload.PostCode,
+    "success": payload.success,
+    "result": payload.result,
+    "statusdescription": payload.statusdescription,
+    "fullexception": payload.fullexception
+    
+  }
+     mc.setPayloadJSON(transform);
+
+    function constructAddress () {
+        var address=[];
+
+        for(i=0;i<payload.Addresses.length;i++) {
+var d=payload.Addresses[i];
+            var data = {
+                Title : (null != d.alias?d.alias: null),
+                Address1 : (null != d.buildingnumber?d.buildingnumber:"" )+ " "+( null != d.streetname?(d.streetname):"")+" - "+(null != d.districtname?(d.districtname):""),
+                Address2: (null != d.cityname?d.cityname:"" )+" "+( null != d.zipcode ?d.zipcode:"")+" - "+(null != d.additionalnumber?d.additionalnumber:""),
+               ObjLatLng:  (null != d.objectid?d.objectid:"" )+" "+( null != d.centroidx ?d.centroidx:"")+" - "+(null != d.centroidy?d.centroidy:"")+(null != d.minx?d.minx:"" )+" ",
+                BuildingNumber:  ( null !=d.buildingnumber?d.buildingnumber : null),
+               Street:  ( null !=d.streetname?d.streetname : null),
+               District:  ( null !=d.districtname?d.districtname : null),
+                City:  ( null !=d.cityname?d.cityname : null),
+               PostCode:  ( null !=d.postcode?d.postcode : null),
+                AdditionalNumber:  ( null !=d.additionalnumber?d.additionalnumber : null),
+                RegionName:  ( null !=d.regionname?d.regionname : null),
+                PolygonString: ( null !=d.polygonstring?d.polygonstring :null),
+				IsPrimaryAddress: (null !=d.isprimaryaddress?d.isprimaryaddress :null),
+				UnitNumber: (null !=d.unitnumber?d.unitnumber :null),
+				Latitude: (null !=d.centroidy?d.centroidy :""),
+				Longitude: (null !=d.centroidx?d.centroidx :""),
+				CityId: (null !=d.cityid?d.cityid :""),
+				RegionId:  (null !=d.regionid?d.regionid :""),
+				Restriction: (null !=d.restriction?d.restriction :null),
+				PKAddressID: (null !=d.PKAddressID?d.PKAddressID :""),
+				DistrictID: (null !=d.districtid?d.districtid :""),
+				Title_L2: (null !=d.alias_E?d.alias_E :""),
+				RegionName_L2: (null !=d.regionname_E?d.regionname_E :""),
+				City_L2:  (null !=d.cityname_E?d.cityname_E :""),
+				Street_L2: (null !=d.streetname_E?d.streetname_E :""),
+				District_L2: (null !=d.districtname_E?d.districtname_E :""),
+				CompanyName_L2: (null !=d.companyname_E?d.companyname_E :""),
+				GovernorateID: (null !=d.governorateid?d.governorateid :null),
+				Governorate:  (null !=d.governoratename?d.governoratename :null),
+				Governorate_L2:  (null !=d.governoratename_E?d.governoratename_E :null)
+
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log level="full" separator="---logAftrerScript----"/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="^0*?[1-9]\d*$" source="json-eval($.totalSearchResults)">
+                <then>
+                    <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var log= mc.getServiceLog();
+var Addressproperty = {
+    "totalSearchResults": input.totalSearchResults,
+    "Address": constructAddress(),
+     "success": input.success,
+    "PostCode": input.PostCode,
+    "result": input.result,
+    "statusdescription": input.statusdescription,
+    "fullexception": input.fullexception
+}
+
+ mc.setPayloadJSON(Addressproperty);
+
+   function constructAddress() {
+        var Addresses=[];
+         for (j = 0; j < input.Addresses.length; j++) {
+              var address={};
+      var payload = input.Addresses[j];
+      var payloadArray = objectValues(payload);
+       log.info(payloadArray);
+for (i = 0; i < payloadArray.length; i++) {
+    if(payloadArray[i] != null)
+  {
+    var key = Object.keys(payload)[i];
+     var value = payloadArray[i];
+    address[key] = value ;
+  }
+}
+Addresses.push(address);
+}
+        return Addresses;
+    }
+
+function objectValues(obj) {
+    var vals = [];
+    for (prop in obj) {
+        vals.push(obj[prop]);
+    }
+    return vals;
+};
+
+log.info(Addressproperty);]]></script>
+                </then>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>true</success>
+                                <statusdescription>NO-RESULTS</statusdescription>
+                                <totalSearchResults>0</totalSearchResults>
+                            </AddressOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <respond/>
+                </else>
+            </filter>
+            <log level="full" separator="---logAfter2ndScript-----"/>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <log level="full" separator="AfterxmlConversion"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi=" http://www.w3.org/2001/XMLSchema-instance">
+                        <success>true</success>
+                        <statusdescription>SUCCESS</statusdescription>
+                        <totalSearchResults>$2</totalSearchResults>
+$1
+</AddressOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/Address"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/totalSearchResults"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

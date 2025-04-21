@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPOutSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <log level="full">
+        <property expression="$ctx:encode" name="encodeCheck"/>
+    </log>
+    <filter regex="utf8" source="$ctx:encode">
+        <then>
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="contentType" value="{$ctx:contentType}"/>
+            </call-template>
+            <log level="full" separator="         outseqelsefilter     ">
+                <property expression="$ctx:contentType" name="contentType"/>
+            </log>
+            <filter regex="application/json" source="$ctx:contentType">
+                <then>
+                    <propertyGroup>
+                        <property expression="$ctx:contentType" name="messageType" scope="axis2" type="STRING"/>
+                        <property expression="$ctx:contentType" name="ContentType" scope="axis2" type="STRING"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property expression="$ctx:contentType" name="messageType" scope="axis2" type="STRING"/>
+                        <property expression="$ctx:contentType" name="ContentType" scope="axis2" type="STRING"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="contentType" value="{$ctx:contentType}"/>
+            </call-template>
+            <log level="full" separator="         outseqelsefilter     ">
+                <property expression="$ctx:contentType" name="contentType"/>
+            </log>
+            <filter regex="application/json" source="$ctx:contentType">
+                <then>
+                    <propertyGroup>
+                        <property expression="$ctx:contentType" name="messageType" scope="axis2" type="STRING"/>
+                        <property expression="$ctx:contentType" name="ContentType" scope="axis2" type="STRING"/>
+                        <property name="CHARACTER_SET_ENCODING" scope="axis2" type="STRING" value="windows-1256"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property name="CHARACTER_SET_ENCODING" scope="axis2" type="STRING" value="windows-1256"/>
+                        <property expression="$ctx:contentType" name="messageType" scope="axis2" type="STRING"/>
+                        <property expression="$ctx:contentType" name="ContentType" scope="axis2" type="STRING"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+        </else>
+    </filter>
+    <respond/>
+</sequence>

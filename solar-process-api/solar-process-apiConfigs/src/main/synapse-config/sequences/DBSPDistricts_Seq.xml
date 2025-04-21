@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPDistricts_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.regionid')" name="regionid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityid')" name="cityid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.catcode')" name="catcode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.type')" name="type" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="districts"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/ProcessAPI/districts"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/ProcessAPI/districts"/>
+    </propertyGroup>
+    <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <log level="custom">
+        <property name="Entry == " value="Entry"/>
+    </log>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"language":"$1",&#xd;
+"type":"districts",&#xd;
+"regionid":"$2",&#xd;
+"cityid":"$3",&#xd;
+"catcode":"$4"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:regionid"/>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:catcode"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPDistricts_EP"/>
+    </call>
+    <log level="full" separator="  processAPIDistrictsAftercall   "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload = mc.getPayloadJSON();
+var log=mc.getServiceLog();
+if(Object.keys(payload.Districts).length>0)
+{
+var district = constructdistrict();
+var transform = {
+"Regions":null,
+"Cities": null,
+   "Districts": district,
+   "ServiceCategories": null,
+   "ServiceSubCategories": null,
+   "success": true,
+   "result": null,
+   "statusdescription": "SUCCESS",
+   "fullexception": null
+};
+}
+else
+{
+var transform={
+    "Regions": null,
+    "Cities": null,
+    "Districts": null,
+    "ZipCodes": null,
+    "ServiceCategories": null,
+    "ServiceSubCategories": null,
+    "success": false,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+};
+}
+mc.setPayloadJSON(transform);
+function constructdistrict() 
+{
+var district=[];
+for(i=0;i<payload.Districts.District.length;i++) 
+{
+var d=payload.Districts.District[i];
+var data = {
+              Id:( null !=d.DISTRICT_ID?d.DISTRICT_ID :""),
+Name:( null !=d.DistrictAlias?d.DistrictAlias :"")
+
+}
+district.push(data);
+}
+ return district;
+ }]]></script>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <log level="full" separator="====logbeforfilter===="/>
+            <filter regex="false" source="json-eval($.success)">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>NO-RESULTS</statusdescription>
+                            </LookupOutputParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <loopback/>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property expression="json-eval($.Districts)" name="Districts" scope="default" type="STRING"/>
+                    </propertyGroup>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "Districts": {&#xd;
+        "District":$1&#xd;
+    }&#xd;
+}</format>
+                        <args>
+                            <arg evaluator="xml" expression="$ctx:Districts"/>
+                        </args>
+                    </payloadFactory>
+                    <log level="full" separator="=======Beforeproperty====">
+                        <property expression="$ctx:Districts" name="logDist2"/>
+                    </log>
+                    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    <log level="full" separator="====Afterproperty===="/>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>true</success>
+                                <statusdescription>SUCCESS</statusdescription>
+$1
+</LookupOutputParams>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="$body//jsonObject/Districts"/>
+                        </args>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

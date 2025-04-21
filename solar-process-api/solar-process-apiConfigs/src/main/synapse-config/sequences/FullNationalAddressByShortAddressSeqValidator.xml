@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="FullNationalAddressByShortAddressSeqValidator" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <filter regex="true" source="boolean(get-property('query.param.shortaddress'))">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>true</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "success": true,&#xd;
+    "statusdescription": "Invalid Short Address, please try again"&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>true</success>
+                                        <statusdescription>Invalid Short Address, please try again</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "success": true,&#xd;
+    "statusdescription": "Invalid Short Address, please try again"&#xd;
+}&#xd;
+</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <filter regex="[A-Z]{4}[0-9]{4}$" source="get-property('query.param.shortaddress')">
+        <then/>
+        <else>
+            <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+                <then>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>true</success>
+                                        <statusdescription>Invalid Short Address, please try again.</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+  "totalSearchResults": "0",&#xd;
+  "Addresses": [],&#xd;
+  "success": true,&#xd;
+  "statusdescription": "Invalid Short Address, please try again."&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>true</success>
+                                        <statusdescription>Invalid Short Address, please try again.</statusdescription>
+                                        <totalSearchResults>0</totalSearchResults>
+                                        <Addresses/>
+                                    </AddressOutPutParams>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                        </then>
+                        <else>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+  "totalSearchResults": "0",&#xd;
+  "Addresses": [],&#xd;
+  "success": true,&#xd;
+  "statusdescription": "Invalid Short Address, please try again."&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                        </else>
+                    </filter>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+</sequence>

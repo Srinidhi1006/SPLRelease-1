@@ -1,0 +1,67 @@
+{
+  "$schema" : "http://wso2.org/json-schema/wso2-data-mapper-v5.0.0/schema#",
+  "outputType" : "JSON",
+  "id" : "http://wso2jsonschema.org",
+  "title" : "root",
+  "type" : "object",
+  "properties" : {
+    "Regions" : {
+      "id" : "http://wso2jsonschema.org/Regions",
+      "type" : "string"
+    },
+    "Cities" : {
+      "id" : "http://wso2jsonschema.org/Cities",
+      "type" : "array",
+      "items" : [ {
+        "id" : "http://wso2jsonschema.org/Cities/0",
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "id" : "http://wso2jsonschema.org/Cities/0/Id",
+            "type" : "string"
+          },
+          "Name" : {
+            "id" : "http://wso2jsonschema.org/Cities/0/Name",
+            "type" : "string"
+          },
+          "GovernorateName" : {
+            "id" : "http://wso2jsonschema.org/Cities/0/GovernorateName",
+            "type" : "string"
+          }
+        }
+      } ]
+    },
+    "Districts" : {
+      "id" : "http://wso2jsonschema.org/Districts",
+      "type" : "string"
+    },
+    "ZipCodes" : {
+      "id" : "http://wso2jsonschema.org/ZipCodes",
+      "type" : "string"
+    },
+    "ServiceCategories" : {
+      "id" : "http://wso2jsonschema.org/ServiceCategories",
+      "type" : "string"
+    },
+    "ServiceSubCategories" : {
+      "id" : "http://wso2jsonschema.org/ServiceSubCategories",
+      "type" : "string"
+    },
+    "success" : {
+      "id" : "http://wso2jsonschema.org/success",
+      "type" : "boolean"
+    },
+    "result" : {
+      "id" : "http://wso2jsonschema.org/result",
+      "type" : "string"
+    },
+    "statusdescription" : {
+      "id" : "http://wso2jsonschema.org/statusdescription",
+      "type" : "string"
+    },
+    "fullexception" : {
+      "id" : "http://wso2jsonschema.org/fullexception",
+      "type" : "string"
+    }
+  }
+}

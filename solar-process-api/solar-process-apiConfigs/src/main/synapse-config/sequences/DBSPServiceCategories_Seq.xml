@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPServiceCategories_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.type')" name="type" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.regionid')" name="regionid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityid')" name="cityid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.catcode')" name="catcode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="servicecategory"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/ProcessAPI/servicecategory"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/ProcessAPI/servicecategory"/>
+    </propertyGroup>
+    <log level="custom">
+        <property name="Entry == " value="Entry"/>
+    </log>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <property expression="translate(get-property('language'),' ','')" name="language" scope="default" type="STRING"/>
+    <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+        <then/>
+        <else>
+            <property name="language" scope="default" type="STRING" value="a"/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"language":"$1",&#xd;
+"type":"servicecategory",&#xd;
+"regionid":"$2",&#xd;
+"cityid":"$3",&#xd;
+"catcode":"$4"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:language"/>
+            <arg evaluator="xml" expression="$ctx:regionid"/>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:catcode"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="Papiafterpayload   "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPServiceCategorySys_EP"/>
+    </call>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload = mc.getPayloadJSON()
+var log=mc.getServiceLog()
+log.info("logging");
+if(Object.keys(payload.servicecategories).length>0)
+{
+log.info(payload.servicecategories.servicecategory.length);
+  var servicecategories = constructservicecategories();
+var transform = {
+  "Regions":null,
+  "Cities": null,
+   "Districts": null,
+   "ServiceCategories": servicecategories,
+   "ServiceSubCategories": null,
+   "success": true,
+   "result": null,
+   "statusdescription": "SUCCESS",
+   "fullexception": null
+};
+}
+else
+{
+var transform={
+    "Regions": null,
+    "Cities": null,
+    "Districts": null,
+    "ZipCodes": null,
+    "ServiceCategories": null,
+    "ServiceSubCategories": null,
+    "success": false,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+};
+}
+ mc.setPayloadJSON(transform);
+  function constructservicecategories () 
+{
+      var service=[];
+      for(i=0;i<payload.servicecategories.servicecategory.length;i++) 
+{
+var d=payload.servicecategories.servicecategory[i];
+          var data = {
+              Id:  ( null !=d.CODE?d.CODE :""),
+              Name:  ( null !=d.description?d.description :"")
+             
+          }
+          service.push(data);
+ }
+        return service;
+  }]]></script>
+    <log level="full" separator="   servicesafterscript  "/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="false" source="json-eval($.success)">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>NO-RESULTS</statusdescription>
+                            </LookupOutputParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <loopback/>
+                </then>
+                <else/>
+            </filter>
+            <propertyGroup>
+                <property expression="json-eval($.ServiceCategories)" name="ServiceCategories" scope="default" type="STRING"/>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"ServiceCategories":&#xd;
+{&#xd;
+"ServiceCategory":$1&#xd;
+}&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:ServiceCategories"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <LookupOutputParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http: //www.w3.org/2001/XMLSchema-instance">
+                        <success>$2</success>
+                        <statusdescription>$3</statusdescription>
+$1
+</LookupOutputParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/*"/>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

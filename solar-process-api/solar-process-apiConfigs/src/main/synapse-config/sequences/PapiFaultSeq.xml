@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="PapiFaultSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <filter regex="e" source="translate(get-property('language'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')">
+        <then>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>Something went wrong, please try again later</statusdescription>
+                                <totalSearchResults>0</totalSearchResults>
+                                <KSABusinesses/>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                    <payloadFactory media-type="json">
+                        <format>{ "totalSearchResults": "0", "KSABusinesses": [], "success": false, "result": null, "statusdescription": "Something went wrong, please try again later", "fullexception": null }</format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>حدث خطأ ما، الرجاء إعادة المحاولة لاحقا</statusdescription>
+                                <totalSearchResults>0</totalSearchResults>
+                                <KSABusinesses/>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                    <payloadFactory media-type="json">
+                        <format>{ "totalSearchResults": "0", "KSABusinesses": [], "success": false, "result": null, "statusdescription": "حدث خطأ ما، الرجاء إعادة المحاولة لاحقا", "fullexception": null }</format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+        </else>
+    </filter>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="isError" value="true"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <respond/>
+</sequence>

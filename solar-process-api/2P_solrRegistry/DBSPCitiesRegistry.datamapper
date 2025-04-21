@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datamapper:DataMapperRoot xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:datamapper="http:///org/wso2/developerstudio/eclipse/gmf/datamapper">
+  <input>
+    <treeNode name="root" schemaDataType="OBJECT" level="1">
+      <node name="Cities" schemaDataType="OBJECT" level="2">
+        <node name="city" level="3">
+          <node name="CENTROID_Y" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/CENTROID_Y"/>
+            <properties key="nullable" value="false"/>
+            <outNode/>
+            <inNode/>
+          </node>
+          <node name="MAPNAME" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/MAPNAME"/>
+            <properties key="nullable" value="false"/>
+            <outNode/>
+            <inNode/>
+          </node>
+          <node name="CITY_ID" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/CITY_ID"/>
+            <properties key="nullable" value="false"/>
+            <outNode>
+              <outgoingLink/>
+              <outgoingLink inNode="//@output/@treeNode.0/@node.1/@node.0/@inNode"/>
+            </outNode>
+            <inNode/>
+          </node>
+          <node name="CENTROID_X" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/CENTROID_X"/>
+            <properties key="nullable" value="false"/>
+            <outNode/>
+            <inNode/>
+          </node>
+          <node name="GovernorateName" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/GovernorateName"/>
+            <properties key="nullable" value="false"/>
+            <outNode>
+              <outgoingLink inNode="//@output/@treeNode.0/@node.1/@node.2/@inNode"/>
+            </outNode>
+            <inNode/>
+          </node>
+          <node name="CityAlias" schemaDataType="STRING" level="4">
+            <properties key="type" value="string"/>
+            <properties key="id" value="http://wso2jsonschema.org/Cities/city/0/CityAlias"/>
+            <properties key="nullable" value="false"/>
+            <outNode>
+              <outgoingLink/>
+              <outgoingLink inNode="//@output/@treeNode.0/@node.1/@node.1/@inNode"/>
+            </outNode>
+            <inNode/>
+          </node>
+          <properties key="type" value="array"/>
+          <properties key="id" value="http://wso2jsonschema.org/Cities/city"/>
+          <properties key="items_id" value="http://wso2jsonschema.org/Cities/city/0"/>
+          <properties key="items_type" value="object"/>
+          <properties key="nullable" value="false"/>
+          <properties key="properties_id" value="{CENTROID_Y={id=http://wso2jsonschema.org/Cities/city/0/CENTROID_Y, type=string}, MAPNAME={id=http://wso2jsonschema.org/Cities/city/0/MAPNAME, type=string}, CITY_ID={id=http://wso2jsonschema.org/Cities/city/0/CITY_ID, type=string}, CENTROID_X={id=http://wso2jsonschema.org/Cities/city/0/CENTROID_X, type=string}, GovernorateName={id=http://wso2jsonschema.org/Cities/city/0/GovernorateName, type=string}, CityAlias={id=http://wso2jsonschema.org/Cities/city/0/CityAlias, type=string}}"/>
+          <outNode/>
+          <inNode/>
+        </node>
+        <properties key="type" value="object"/>
+        <properties key="id" value="http://wso2jsonschema.org/Cities"/>
+        <properties key="nullable" value="false"/>
+        <properties key="properties_id" value="{city={id=http://wso2jsonschema.org/Cities/city, type=array, items=[{id=http://wso2jsonschema.org/Cities/city/0, type=object, properties={CENTROID_Y={id=http://wso2jsonschema.org/Cities/city/0/CENTROID_Y, type=string}, MAPNAME={id=http://wso2jsonschema.org/Cities/city/0/MAPNAME, type=string}, CITY_ID={id=http://wso2jsonschema.org/Cities/city/0/CITY_ID, type=string}, CENTROID_X={id=http://wso2jsonschema.org/Cities/city/0/CENTROID_X, type=string}, GovernorateName={id=http://wso2jsonschema.org/Cities/city/0/GovernorateName, type=string}, CityAlias={id=http://wso2jsonschema.org/Cities/city/0/CityAlias, type=string}}}]}}"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <properties key="type" value="object"/>
+      <properties key="$schema" value="http://wso2.org/json-schema/wso2-data-mapper-v5.0.0/schema#"/>
+      <properties key="id" value="http://wso2jsonschema.org"/>
+      <properties key="nullable" value="false"/>
+      <outNode/>
+      <inNode/>
+    </treeNode>
+  </input>
+  <output>
+    <treeNode name="root" schemaDataType="OBJECT" level="1">
+      <node name="Regions" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/Regions"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="Cities" level="2">
+        <node name="Id" schemaDataType="STRING" level="3">
+          <properties key="type" value="string"/>
+          <properties key="id" value="http://wso2jsonschema.org/Cities/0/Id"/>
+          <properties key="nullable" value="false"/>
+          <outNode/>
+          <inNode incomingLink="//@input/@treeNode.0/@node.0/@node.0/@node.2/@outNode/@outgoingLink.1"/>
+        </node>
+        <node name="Name" schemaDataType="STRING" level="3">
+          <properties key="type" value="string"/>
+          <properties key="id" value="http://wso2jsonschema.org/Cities/0/Name"/>
+          <properties key="nullable" value="false"/>
+          <outNode/>
+          <inNode incomingLink="//@input/@treeNode.0/@node.0/@node.0/@node.5/@outNode/@outgoingLink.1"/>
+        </node>
+        <node name="GovernorateName" schemaDataType="STRING" level="3">
+          <properties key="type" value="string"/>
+          <properties key="id" value="http://wso2jsonschema.org/Cities/0/GovernorateName"/>
+          <properties key="nullable" value="false"/>
+          <outNode/>
+          <inNode incomingLink="//@input/@treeNode.0/@node.0/@node.0/@node.4/@outNode/@outgoingLink.0"/>
+        </node>
+        <properties key="type" value="array"/>
+        <properties key="id" value="http://wso2jsonschema.org/Cities"/>
+        <properties key="items_id" value="http://wso2jsonschema.org/Cities/0"/>
+        <properties key="items_type" value="object"/>
+        <properties key="nullable" value="false"/>
+        <properties key="properties_id" value="{Id={id=http://wso2jsonschema.org/Cities/0/Id, type=string}, Name={id=http://wso2jsonschema.org/Cities/0/Name, type=string}, GovernorateName={id=http://wso2jsonschema.org/Cities/0/GovernorateName, type=string}}"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="Districts" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/Districts"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="ZipCodes" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/ZipCodes"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="ServiceCategories" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/ServiceCategories"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="ServiceSubCategories" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/ServiceSubCategories"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="success" schemaDataType="BOOLEAN" level="2">
+        <properties key="type" value="boolean"/>
+        <properties key="id" value="http://wso2jsonschema.org/success"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="result" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/result"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="statusdescription" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/statusdescription"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <node name="fullexception" schemaDataType="STRING" level="2">
+        <properties key="type" value="string"/>
+        <properties key="id" value="http://wso2jsonschema.org/fullexception"/>
+        <properties key="nullable" value="false"/>
+        <outNode/>
+        <inNode/>
+      </node>
+      <properties key="type" value="object"/>
+      <properties key="$schema" value="http://wso2.org/json-schema/wso2-data-mapper-v5.0.0/schema#"/>
+      <properties key="id" value="http://wso2jsonschema.org"/>
+      <properties key="nullable" value="false"/>
+      <outNode/>
+      <inNode/>
+    </treeNode>
+  </output>
+</datamapper:DataMapperRoot>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPGetFeatureExtents_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.layername')" name="type" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.featureid')" name="id" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="GetExtentsFeature"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/Address/GetExtentsFeature"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/Address/GetExtentsFeature"/>
+    </propertyGroup>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <log/>
+    <filter regex="true" source="boolean(boolean(get-property('query.param.layername')) and boolean(get-property('query.param.featureid')))">
+        <then>
+            <filter regex="^(regions|cities|districts|streets|zipcodes)$" source="get-property('query.param.layername')">
+                <then>
+                    <log level="full" separator="respsefor the  condition"/>
+                </then>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                        <success>false</success>
+                                        <statusdescription>Cannot find table 0.</statusdescription>
+                                    </Extents>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                        </then>
+                        <else>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "minx": null,&#xd;
+    "miny": null,&#xd;
+    "maxx": null,&#xd;
+    "maxy": null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "Cannot find table 0.",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                        </else>
+                    </filter>
+                    <loopback/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>Please enter featureid and layername</statusdescription>
+                            </Extents>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "PostCode": null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter featureid and layername",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <filter regex="[0-9]" source="$ctx:id">
+        <then/>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>NO RESULTS</statusdescription>
+                            </Extents>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "totalSearchResults": "0",&#xd;
+    "Addresses": [],&#xd;
+    "PostCode": null,&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "NO-RESULTS",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                </else>
+            </filter>
+            <loopback/>
+        </else>
+    </filter>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"type":"$1",&#xd;
+"id":"$2"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:type"/>
+            <arg evaluator="xml" expression="$ctx:id"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="  getExtentsAfterPayload "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="DBSPGetFeatureExtentsSys_EP"/>
+    </call>
+    <log level="full" separator="    getFeaturesbeforescript    "/>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+if(Object.keys(payload.FeatureExtents).length>0)
+{
+function constructFeatureExtent()
+{
+	var d = payload.FeatureExtents.FeatureExtent[0];
+            var data = {
+                success: true,
+				datasetOrdatatable: null,
+                result: null,
+                statusdescription: "SUCCESS",
+                fullexception: null,
+				minx:  (null !=d.Minx?d.Minx :""),
+                miny:  (null !=d.Miny?d.Miny :""),
+                maxx: (null !=d.Maxx?d.Maxx :""),
+                maxy: (null !=d.Maxy?d.Maxy :"")
+            };
+            return data;
+}
+var FeatureExtents = constructFeatureExtent();
+}
+else
+{
+var FeatureExtents={
+	"minx": null,
+    "miny": null,
+    "maxx": null,
+    "maxy": null,
+    "success": false,
+    "result": null,
+    "statusdescription": "NO-RESULTS",
+    "fullexception": null
+};
+}
+
+mc.setPayloadJSON(FeatureExtents);]]></script>
+    <log level="full" separator="**************inpapi AfterScript*****************"/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <log level="full" separator="------AfterxmlConversion"/>
+            <filter regex="true" source="$body//jsonObject/success">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>$1</success>
+                                <statusdescription>$2</statusdescription>
+                                <minx>$3</minx>
+                                <miny>$4</miny>
+                                <maxx>$5</maxx>
+                                <maxy>$6</maxy>
+                            </Extents>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="$body//jsonObject/success"/>
+                            <arg evaluator="xml" expression="$body//jsonObject/statusdescription"/>
+                            <arg evaluator="xml" expression="$body//jsonObject/minx"/>
+                            <arg evaluator="xml" expression="$body//jsonObject/miny"/>
+                            <arg evaluator="xml" expression="$body//jsonObject/maxx"/>
+                            <arg evaluator="xml" expression="$body//jsonObject/maxy"/>
+                        </args>
+                    </payloadFactory>
+                </then>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <Extents xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>NO RESULTS</statusdescription>
+                            </Extents>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                </else>
+            </filter>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

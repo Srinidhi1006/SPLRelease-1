@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="DBSPAutoComplete_Seq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="PAPIAutoComplete"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/PAPIAutoComplete"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET  -/AutoComplete"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property expression="get-property('query.param.cityid')" name="cityid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.districtid')" name="districtid" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.querytext')" name="QueryText" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.cityname')" name="cityName" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.page')" name="pageNumber" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+    </propertyGroup>
+    <log level="full" separator="  ***FisrstLog ***********    "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"DistrictID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <log level="full" separator="    ******AftrPyload*****    "/>
+    <call>
+        <endpoint key="AutoCompletefeature"/>
+    </call>
+    <log level="full" separator="  ***AftrEP*****   "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+if(Object.keys(payload.GetFeatures).length>0)
+{
+var Features = constructAddress();
+var TotalResults = payload.GetFeatures.GetFeature.length;
+
+var transform = {
+    "Addresses": Features,
+    "Districts": [],
+    "Streets": [],
+    "Status": true,
+    "TotalResults": TotalResults,
+    "ErrorDetails": null
+};
+mc.setPayloadJSON(transform);
+mc.setProperty("getFeature", JSON.stringify(Features));
+mc.setProperty("TotalResults", TotalResults);
+}
+
+else
+{
+mc.setProperty("getFeature", JSON.stringify([]));
+}
+
+function constructAddress() {
+var address=[];
+
+for(i=0;i<payload.GetFeatures.GetFeature.length;i++) {
+var d=payload.GetFeatures.GetFeature[i];
+var data = {
+FKTABLEMAPID : (null != d.FKTABLEMAPID?d.FKTABLEMAPID: null),
+GeoXCoordinate : (null != d.GeoXCoordinate?d.GeoXCoordinate: null),
+GeoYCoordinate: (null != d.GeoYCoordinate?d.GeoYCoordinate: null ),
+FkCityId:(null !=d.FkCityId?d.FkCityId : null),
+CityName:(null !=d.CityName?d.CityName : null),
+FkDistrictId:(null !=d.FkDistrictId?d.FkDistrictId : null),
+DistrictName:(null !=d.DistrictName?d.DistrictName : null),
+StreetName:(null !=d.StreetName?d.StreetName : null),
+AdditionalNumber:(null !=d.AdditionalNumber?d.AdditionalNumber : null),
+BuildingNumber:(null !=d.BuildingNumber?d.BuildingNumber : null),
+ZipCode:(null !=d.ZipCode?d.ZipCode : null),
+FkRegionId: (null !=d.FkRegionId?d.FkRegionId : null),
+AddressId: (null !=d.AddressId?d.AddressId : null)
+}
+address.push(data);
+};
+return address;
+}]]></script>
+    <log level="custom" separator="  *****featureCheck******   ">
+        <property expression="$ctx:getFeature" name="getFeature"/>
+        <property expression="$ctx:getFeature1" name="getFeature1"/>
+        <property expression="$ctx:totalSearch" name="totalSearch"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"DistrictID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5"&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <call>
+        <endpoint key="AutoCompleteDistrictSys_EP"/>
+    </call>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <script language="js"><![CDATA[var log = mc.getServiceLog();
+var payload = mc.getPayloadJSON();
+var Features = mc.getProperty("getFeature");
+var TotalResults = mc.getProperty("TotalResults");
+
+if(Object.keys(payload.AutoComplete_getAddresses).length>0)
+{
+	var TotalResults = payload.AutoComplete_getAddresses.AutoComplete_getAddress.length;
+    var District = constructDistrict();
+	
+var transform = {
+    "Addresses": JSON.parse(Features),
+    "Districts": District,
+    "Streets": [],
+    "Status": true,
+    "TotalResults": TotalResults,
+    "ErrorDetails": null
+};
+    mc.setPayloadJSON(transform);
+	mc.setProperty("getDistrict", JSON.stringify(District));
+	mc.setProperty("TotalResults", TotalResults);
+}
+else
+{
+mc.setProperty("getDistrict", JSON.stringify([]));
+}
+
+    function constructDistrict() {
+        var address=[];
+
+        for(i=0;i<payload.AutoComplete_getAddresses.AutoComplete_getAddress.length;i++) {
+	var d=payload.AutoComplete_getAddresses.AutoComplete_getAddress[i];
+            var data = {
+                CityId : (null != d.fkCityID?d.fkCityID: null),
+                DistrictId : (null != d.pkDistrictID?d.pkDistrictID: null),
+                ArabicName: (null != d.ArabicName?d.ArabicName: null),
+                EnglishName: (null !=d.EnglishName?d.EnglishName: null)
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <log level="custom" separator="   *****GDisPr*******   ">
+        <property expression="$ctx:getDistrict" name="getDistrict"/>
+    </log>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+	"CityID": "$1",&#xd;
+	"DistrictID": "$2",&#xd;
+	"CityNAME": "$3",&#xd;
+	"BuildingNumber": "$4",&#xd;
+    "Language":"$5" &#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:cityid"/>
+            <arg evaluator="xml" expression="$ctx:districtid"/>
+            <arg evaluator="xml" expression="$ctx:cityName"/>
+            <arg evaluator="xml" expression="$ctx:QueryText"/>
+            <arg evaluator="xml" expression="$ctx:language"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <call>
+        <endpoint key="AutoCompleteStreetSys_EP"/>
+    </call>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="{application/json}"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload =mc.getPayloadJSON();
+var log=mc.getServiceLog();
+var Features = mc.getProperty("getFeature");
+var District = mc.getProperty("getDistrict");
+var TotalResults = mc.getProperty("TotalResults");
+
+if(Object.keys(payload.AutoComplete_getStreets).length>0)
+{
+    var TotalResults = payload.AutoComplete_getStreets.AutoComplete_getStreet.length;
+    var Street = constructStreet();
+	
+var transform = {
+    "Addresses": JSON.parse(Features),
+    "Districts": JSON.parse(District),
+    "Streets": Street,
+    "Status": true,
+    "TotalResults": TotalResults,
+    "ErrorDetails": null
+};
+    mc.setPayloadJSON(transform);
+	mc.setProperty("getStreet", JSON.stringify(Street));
+}
+
+else
+{
+var transform={
+    "Addresses": JSON.parse(Features),
+    "Districts": JSON.parse(District),
+    "Streets": [],
+    "Status": true,
+    "TotalResults": (null == TotalResults?0:TotalResults),
+    "ErrorDetails": null
+};
+	mc.setProperty("getStreet", JSON.stringify([]));
+	mc.setPayloadJSON(transform);
+}
+    function constructStreet() {
+        var address=[];
+
+        for(i=0;i<payload.AutoComplete_getStreets.AutoComplete_getStreet.length;i++) {
+var d=payload.AutoComplete_getStreets.AutoComplete_getStreet[i];
+            var data = {
+                CityId : (null != d.fkCityID?d.fkCityID: null),
+                CityName : (null != d.CityName?d.CityName: null),
+                StreetName: (null != d.StreetName?d.StreetName: null)
+            }
+            address.push(data);
+          };
+          return address;
+    }]]></script>
+    <log level="custom" separator="   *****NGStreetEP*****   ">
+        <property expression="$ctx:getStreet" name="getStreet"/>
+    </log>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="0" source="json-eval($.TotalResults)">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <AutoCompleteAddressOutput xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <Addresses/>
+                                <Districts/>
+                                <Streets/>
+                                <Status>true</Status>
+                                <TotalResults>0</TotalResults>
+                            </AutoCompleteAddressOutput>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <loopback/>
+                </then>
+                <else/>
+            </filter>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var log= mc.getServiceLog();
+var Addressproperty = {
+"Addresses": constructAddress(),
+"Districts": constructDistrict(),
+"Streets": constructStreet(),
+"Status": input.Status,
+"TotalResults": input.TotalResults,
+"ErrorDetails": input.ErrorDetails
+}
+
+ 
+
+mc.setPayloadJSON(JSON.stringify(Addressproperty));
+
+ 
+
+function constructAddress() {
+
+     var Addresses=[];
+    for (j = 0; j < input.Addresses.length; j++) {
+     var address={};
+     var payload = input.Addresses[j];
+     var payloadArray = objectValues(payload);
+
+     log.info(payloadArray);
+
+        for (i = 0; i < payloadArray.length; i++) {
+            if(payloadArray[i] != null)
+            {
+             var key = Object.keys(payload)[i];
+             var value = payloadArray[i];
+             address[key] = value ;
+            }
+        }
+        Addresses.push(address);
+    }
+    return Addresses;
+}
+function constructDistrict() {
+
+ 
+
+     var Districts=[];
+    for (j = 0; j < input.Districts.length; j++) {
+     var District={};
+     var payload = input.Districts[j];
+     var payloadArray = objectValues(payload);
+
+     log.info(payloadArray);
+
+        for (i = 0; i < payloadArray.length; i++) {
+            if(payloadArray[i] != null)
+            {
+             var key = Object.keys(payload)[i];
+             var value = payloadArray[i];
+             District[key] = value ;
+            }
+        }
+        Districts.push(District);
+    }
+    return Districts;
+}
+function constructStreet() {
+
+ 
+
+     var Streets=[];
+    for (j = 0; j < input.Streets.length; j++) {
+     var Street={};
+     var payload = input.Streets[j];
+     var payloadArray = objectValues(payload);
+
+     log.info(payloadArray);
+
+        for (i = 0; i < payloadArray.length; i++) {
+            if(payloadArray[i] != null)
+            {
+             var key = Object.keys(payload)[i];
+             var value = payloadArray[i];
+             Street[key] = value ;
+            }
+        }
+        Streets.push(Street);
+    }
+    return Streets;
+}
+
+ 
+
+function objectValues(obj) {
+var vals = [];
+     for (prop in obj) {
+     vals.push(obj[prop]);
+     }
+return vals;
+};]]></script>
+            <propertyGroup>
+                <property expression="json-eval($.Addresses)" name="Addresses" scope="default" type="STRING"/>
+                <property expression="json-eval($.Districts)" name="Districts" scope="default" type="STRING"/>
+                <property expression="json-eval($.Streets)" name="Streets" scope="default" type="STRING"/>
+                <property expression="json-eval($.Status)" name="Status" scope="default" type="STRING"/>
+                <property expression="json-eval($.TotalResults)" name="TotalResults" scope="default" type="STRING"/>
+                <property expression="json-eval($.ErrorDetails)" name="ErrorDetails" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+"Addresses":$1,&#xd;
+"Districts":$2,&#xd;
+"Streets":$3&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Addresses"/>
+                    <arg evaluator="xml" expression="$ctx:Districts"/>
+                    <arg evaluator="xml" expression="$ctx:Streets"/>
+                </args>
+            </payloadFactory>
+            <log level="full" separator="  *****PAPIAftrPL*****       "/>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <AutoCompleteAddressOutput xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <Status>$1</Status>
+                        <TotalResults>$2</TotalResults>
+                        <Addresses>
+                            <AutoCompleteResult>$3</AutoCompleteResult>
+                        </Addresses>
+                        <Districts>
+                            <AutoCompleteDistrictResult>$4</AutoCompleteDistrictResult>
+                        </Districts>
+                        <Streets>
+                            <AutoCompleteStreetResult>$5</AutoCompleteStreetResult>
+                        </Streets>
+                    </AutoCompleteAddressOutput>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Status"/>
+                    <arg evaluator="xml" expression="$ctx:TotalResults"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Addresses"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Districts"/>
+                    <arg evaluator="xml" expression="$body//jsonObject/Streets"/>
+                </args>
+            </payloadFactory>
+            <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

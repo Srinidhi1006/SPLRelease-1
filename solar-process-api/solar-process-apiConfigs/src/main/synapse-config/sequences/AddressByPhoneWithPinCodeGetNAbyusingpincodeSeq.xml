@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="AddressByPhoneWithPinCodeGetNAbyusingpincodeSeq" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+    <propertyGroup>
+        <property expression="get-property('query.param.format')" name="format" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.mobileno')" name="mobileno" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.encode')" name="encode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.pincode')" name="pincode" scope="default" type="STRING"/>
+        <property expression="get-property('query.param.language')" name="language" scope="default" type="STRING"/>
+    </propertyGroup>
+    <propertyGroup>
+        <property name="CommonLogFlowId" scope="default" type="STRING" value="AddressSubcribers"/>
+        <property name="CommonLogInQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+        <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+        <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+        <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+        <property name="CommonLogOutQueue" scope="default" type="STRING" value="GET -/AddressSubcribers"/>
+    </propertyGroup>
+    <filter regex="true" source="boolean($ctx:pincode)">
+        <then/>
+        <else>
+            <filter regex="xml" source="$ctx:format">
+                <then>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <success>false</success>
+                                <statusdescription>please enter pincode</statusdescription>
+                            </BusinessOutPutParams>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter  pincode",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+        </else>
+    </filter>
+    <filter regex="true" source="boolean($ctx:mobileno)">
+        <then>
+            <filter regex="^966([0-9]{9})$|^05([0-9]{10})$" source="$ctx:mobileno">
+                <then/>
+                <else>
+                    <filter regex="xml" source="$ctx:format">
+                        <then>
+                            <payloadFactory media-type="xml">
+                                <format>
+                                    <AddressByPhoneWithPincode xmlns="">
+                                        <success>false</success>
+                                        <statusdescription>please enter  valid mobile number</statusdescription>
+                                    </AddressByPhoneWithPincode>
+                                </format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                            </propertyGroup>
+                        </then>
+                        <else>
+                            <payloadFactory media-type="json">
+                                <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter valid mobile number",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                                <args/>
+                            </payloadFactory>
+                            <propertyGroup>
+                                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+                            </propertyGroup>
+                        </else>
+                    </filter>
+                    <loopback/>
+                </else>
+            </filter>
+        </then>
+        <else>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+    "success": false,&#xd;
+    "result": null,&#xd;
+    "statusdescription": "please enter  mobile number",&#xd;
+    "fullexception": null&#xd;
+}</format>
+                <args/>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+            <loopback/>
+        </else>
+    </filter>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <payloadFactory media-type="json">
+        <format>{&#xd;
+"MobileNo": $1,&#xd;
+"PinCode":$2&#xd;
+}</format>
+        <args>
+            <arg evaluator="xml" expression="$ctx:mobileno"/>
+            <arg evaluator="xml" expression="$ctx:pincode"/>
+        </args>
+    </payloadFactory>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <call>
+        <endpoint key="GetAddressEp"/>
+    </call>
+    <log level="full" separator="   *****logafterEp****  "/>
+    <call-template description="Common Log Templete" target="mi-CommonLog">
+        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+        <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+        <with-param name="contentType" value="application/json"/>
+    </call-template>
+    <script language="js"><![CDATA[var payload=mc.getPayloadJSON();
+var verify=constructGetAddressByPincode();
+if(Object.keys(payload.waselAddressDetails).length > 0)
+{
+var transform = {
+"waselAddressDetails":verify,
+"genericResult": {
+        "ErrorCode": payload.waselAddressDetails.genericResult.ErrorCode,
+        "ErrorFriendlyMessage": payload.waselAddressDetails.genericResult.ErrorFriendlyMessage,
+        "Status": payload.waselAddressDetails.genericResult.Status,
+        "SystemErrorMessage": payload.waselAddressDetails.genericResult.SystemErrorMessage
+    },
+"success": true,
+"result": null,
+"statusdescription": null,
+"fullexception": null
+};
+}
+else
+{
+var transform = { 
+    "waselAddressDetails": null,  
+    "genericResult": {  
+        "ErrorCode": "Add004",  
+        "ErrorFriendlyMessage": 
+        "Internal API Request Error",  
+        "Status": true,  
+        "SystemErrorMessage": "The transaction under which this method call was executing was asynchronously aborted.",  
+        "RequestId": -1   
+        }  
+};
+}
+function constructGetAddressByPincode() {
+var Address=[];
+for(i=0;i<payload.waselAddressDetails.Address.length;i++) {
+d=payload.waselAddressDetails.Address[i];
+var data = {
+City: (null !=d.City?d.City :""),
+CityName: (null !=d.CityName?d.CityName :""),
+CityNameEn: (null !=d.CityNameEn?d.CityNameEn :""),
+LocationX: (null !=d.LocationX?d.LocationX :""),
+LocationY: (null !=d.LocationY?d.LocationY :""),
+LocationZ: (null !=d.LocationZ?d.LocationZ :""),
+District: (null !=d.District?d.District :""),
+DistrictArea: (null !=d.DistrictArea?d.DistrictArea :""),
+DistrictName: (null !=d.DistrictName?d.DistrictName :""),
+DistrictNameEN: (null !=d.DistrictNameEN?d.DistrictNameEN :""),
+MobileNo: (null !=d.MobileNo?d.MobileNo :""),
+Latitude: (null !=d.Latitude?d.Latitude :""),
+Longitude: (null !=d.Longitude?d.Longitude :""),
+Street: (null !=d.Street?d.Street :""),
+StreetNameEn: (null !=d.StreetNameEn?d.StreetNameEn :""),
+StreetName: (null !=d.StreetName?d.StreetName :""),
+UnitNo: (null !=d.UnitNo?d.UnitNo :""),
+UnitTypeID: (null !=d.UnitTypeID?d.UnitTypeID :""),
+ShortAddress: (null !=d.ShortAddress?d.ShortAddress :"")
+
+ 
+
+ 
+
+
+}
+Address.push(data);
+};
+return Address;
+}
+mc.setPayloadJSON(transform);]]></script>
+    <log level="full" separator="***********LogAfterScript**************"/>
+    <filter regex="xml" source="$ctx:format">
+        <then>
+            <filter regex="true" source="json-eval($.success)">
+                <then/>
+                <else>
+                    <payloadFactory media-type="xml">
+                        <format>
+                            <waselAddressDetails xmlns="">
+                                <genericResult>
+                                    <ErrorCode>OTP005</ErrorCode>
+                                    <ErrorFriendlyMessage>Internal API Request Error</ErrorFriendlyMessage>
+                                    <Status>false</Status>
+                                    <SystemErrorMessage>The transaction under which this method call was executing was asynchronously aborted.</SystemErrorMessage>
+                                </genericResult>
+                            </waselAddressDetails>
+                        </format>
+                        <args/>
+                    </payloadFactory>
+                    <propertyGroup>
+                        <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                        <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+                    </propertyGroup>
+                    <loopback/>
+                </else>
+            </filter>
+            <script language="js"><![CDATA[var input = mc.getPayloadJSON();
+var log= mc.getServiceLog();
+var waselAddressDetails = {
+    "genericResult": {
+        "ErrorCode": input.waselAddressDetails.genericResult.ErrorCode,
+        "ErrorFriendlyMessage": input.waselAddressDetails.genericResult.ErrorFriendlyMessage,
+        "Status": input.waselAddressDetails.genericResult.Status,
+        "SystemErrorMessage": input.waselAddressDetails.genericResult.SystemErrorMessage
+    },
+	"success": true,
+	"result": null,
+	"statusdescription": null,
+	"fullexception": null,
+    "waselAddressDetails": constructAddress()
+}
+mc.setPayloadJSON(waselAddressDetails);
+
+ 
+
+   function constructAddress() {
+        var addresses=[];
+         for (j = 0; j < input.waselAddressDetails.length; j++) {
+              var address={};
+      var payload = input.waselAddressDetails[j];
+      var payloadArray = objectValues(payload);
+       log.info(payloadArray);
+for (i = 0; i < payloadArray.length; i++) {
+    if(payloadArray[i] != null)
+  {
+    var key = Object.keys(payload)[i];
+     var value = payloadArray[i];
+    address[key] = value ;
+  }
+}
+addresses.push(address);
+}
+        return addresses;
+    }
+
+ 
+
+function objectValues(obj) {
+    var vals = [];
+    for (prop in obj) {
+        vals.push(obj[prop]);
+    }
+    return vals;
+};
+log.info(waselAddressDetails);]]></script>
+            <propertyGroup>
+                <property expression="json-eval($.waselAddressDetails)" name="Addresses" scope="default" type="STRING"/>
+                <property expression="json-eval($.success)" name="success" scope="default" type="STRING"/>
+                <property expression="json-eval($.statusdescription)" name="statusdescription" scope="default" type="STRING"/>
+            </propertyGroup>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+
+"waselAddressDetails":{&#xd;
+
+"waselAddressDetail": $1&#xd;
+
+}&#xd;
+
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:Addresses"/>
+                </args>
+            </payloadFactory>
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+            <payloadFactory media-type="xml">
+                <format>
+                    <BusinessOutPutParams xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                        <success>$2</success>
+                        <statusdescription>$3</statusdescription>
+
+$1
+
+</BusinessOutPutParams>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="$body//jsonObject/waselAddressDetails"/>
+                    <arg evaluator="xml" expression="$ctx:success"/>
+                    <arg evaluator="xml" expression="$ctx:statusdescription"/>
+                </args>
+            </payloadFactory>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                <property name="contentType" scope="default" type="STRING" value="application/xml"/>
+            </propertyGroup>
+        </then>
+        <else>
+            <propertyGroup>
+                <property name="messageType" scope="axis2" type="STRING" value="application/json"/>
+                <property name="contentType" scope="default" type="STRING" value="application/json"/>
+            </propertyGroup>
+        </else>
+    </filter>
+</sequence>

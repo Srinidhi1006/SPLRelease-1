@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="CRMNAScript" groupId="com.example.resource" version="1.0.0" type="registry/resource" serverRole="EnterpriseIntegrator">
+        <item>
+            <file>CRMNAScript.js</file>
+            <path>/_system/governance/scripts</path>
+            <mediaType>application/javascript</mediaType>
+            <properties/>
+        </item>
+    </artifact>
+</artifacts>

@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/sapi/solr" name="SolarSystemAPI" version="1.0.0" version-type="context" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/fetchByQuery">
+        <inSequence>
+            <log level="full" separator="insidesystem"/>
+            <propertyGroup>
+                <property expression="json-eval($.Query)" name="uri.var.q" scope="default" type="STRING"/>
+                <property expression="json-eval($.SolrObject)" name="uri.var.so" scope="default" type="STRING"/>
+                <property expression="json-eval($.Start)" name="uri.var.s" scope="default" type="STRING"/>
+                <property expression="json-eval($.rows)" name="uri.var.r" scope="default" type="STRING"/>
+                <property expression="json-eval($.Language)" name="Language" scope="default" type="STRING"/>
+                <property expression="json-eval($.start)" name="uri.var.start" scope="default" type="STRING"/>
+            </propertyGroup>
+            <script language="js"><![CDATA[var start = parseInt(mc.getProperty("uri.var.start"));
+            var result = start -1 ;
+            mc.setProperty("uri.var.start", result.toFixed());]]></script>
+            <propertyGroup>
+                <property name="CommonLogFlowId" scope="default" type="STRING" value="SYSAPI"/>
+                <property name="CommonLogInQueue" scope="default" type="STRING" value="POST -/solr"/>
+                <property expression="get-property('MessageID')" group="3" name="CommonLogLoggingId" pattern="((urn|uuid):)*(.*)" scope="default" type="STRING"/>
+                <property expression="get-property('correlation_id')" name="CommonLogLoggingId2" scope="default" type="STRING"/>
+                <property name="CommonLogMessageType" scope="default" type="STRING" value="application/json"/>
+                <property expression="fn:concat('GET -http://10.15.127.112:8983/solr/',get-property('uri.var.so'),'/select?q=',get-property('uri.var.q'))" name="CommonLogOutQueue" scope="default" type="STRING"/>
+            </propertyGroup>
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="contentType" value="application/json"/>
+            </call-template>
+            <!--This is generated API skeleton.-->
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogOutQueue}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="contentType" value="application/json"/>
+            </call-template>
+            <log level="full" separator="__">
+                <property name="before" value="call"/>
+            </log>
+            <call>
+                <endpoint key="SolarSystemEP"/>
+            </call>
+            <log level="full" separator="--">
+                <property name="After" value="call"/>
+                <property expression="json-eval($.responseHeader.status)" name="json-eval($.responseHeader.status)"/>
+            </log>
+            <property expression="json-eval($.responseHeader.status)" name="Status" scope="default" type="STRING"/>
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="inQueue" value="{$ctx:CommonLogOutQueue}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="contentType" value="application/json"/>
+            </call-template>
+            <filter regex="0" source="get-property('Status')">
+                <then>
+                    <log>
+                        <property name="true" value="true"/>
+                    </log>
+                </then>
+                <else>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+    "totalSearchResults":"0",&#xd;
+    "success":"false",&#xd;
+    "statusdescription":"$1"&#xd;
+}</format>
+                        <args>
+                            <arg evaluator="json" expression="$.error.msg"/>
+                        </args>
+                    </payloadFactory>
+                    <call-template description="" target="mi-CommonLog">
+                        <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                        <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                        <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                        <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                        <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                        <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                        <with-param name="isError" value="true"/>
+                        <with-param name="contentType" value="application/json"/>
+                    </call-template>
+                    <respond/>
+                </else>
+            </filter>
+            <switch source="$ctx:uri.var.so">
+                <case regex="CRMNA">
+                    <script key="gov:scripts/CRMNAScripts.js" language="js"/>
+                </case>
+                <case regex="NA">
+                    <script language="js"><![CDATA[var log = mc.getServiceLog();        
+    log.info("Logging inside Script Mediator");
+var payload =mc.getPayloadJSON();
+ var language = mc.getProperty("Language");
+ log.info(language);
+    var Addresses = constructAddress(language);
+ 	 var transform = {
+    "totalSearchResults": payload.response.numFound,
+    "success": "true",
+    "result": null,
+    "statusdescription": "SUCCESS",
+    "fullexception": null,
+    "Addresses":Addresses
+  };
+   mc.setPayloadJSON(transform);
+    function constructAddress(lang) {
+     var address=[];
+     
+   
+     
+for (i = 0; i < payload.response.docs.length; ++i) {
+d = payload.response.docs[i];
+var Latitude="";
+var Longitude="";
+if(Array.isArray(d.Latitude))
+{
+Latitude=d.Latitude[0].toString();
+Longitude=d.Longitude[0].toString();
+}
+else
+{
+Latitude=d.Latitude;
+Longitude=d.Longitude;
+}
+var english = {
+                Title: null,
+                Address1 : (null != d.buildingno?d.buildingno[0]:"" ) + ( null != d.StreetNameEN ?d.StreetNameEN[0]:"")+(null != d.DistrictAreaEN?d.DistrictAreaEN[0]:""),
+                Address2: (null != d.CityEnglishName?d.CityEnglishName[0]:"" )+" " + ( null != d.zipcodenumber ?d.zipcodenumber[0]:"")+ " - "+(null != d.additionalno?d.additionalno[0]:""),
+                ObjLatLng: (null != d.Latitude?d.Latitude:"" ) +" "+ ( null != Longitude?Longitude:""),
+                BuildingNumber: (null != d.buildingno? d.buildingno[0]:""),
+                Street: ( null !=  d.StreetNameEN?d.StreetNameEN[0] :null),
+                District: ( null !=  d.DistrictAreaEN?d.DistrictAreaEN[0] :""),
+                City:  ( null !=  d.CityEnglishName?d.CityEnglishName[0] :""),
+                PostCode: ( null !=  d.zipcodenumber?d.zipcodenumber [0] :""),
+                AdditionalNumber: ( null !=  d.additionalno?d.additionalno [0] :""),
+                RegionName: ( null !=  d.EmirateEnglishName?d.EmirateEnglishName [0] :""),
+                PolygonString:  ( null !=d.PolygonString?d.PolygonString :""),
+                IsPrimaryAddress: ( null !=  d.IsDefaultAddress?d.IsDefaultAddress [0] :""),
+                UnitNumber: ( null !=  d.UnitNo?d.UnitNo [0] :""),
+                Latitude: ( null !=  Latitude?Latitude :""),
+                Longitude: ( null != Longitude?Longitude:""),
+                CityId: ( null !=  d.cityId?d.cityId [0] :""),
+                RegionId: ( null !=  d.emirateid?d.emirateid [0] :""),
+                Restriction: ( null !=  d.Restriction?d.Restriction [0] :""),
+                PKAddressID: ( null !=  d.zipcodenumber?d.zipcodenumber [0] :"")+(null != d.buildingno?d.buildingno [0] :"")+  (null != d.additionalno?d.additionalno [0] :""),
+                DistrictID: null,
+                RegionName_L2: (null != d.EmirateArabicName ? d.EmirateArabicName :""),
+                City_L2: (null != d.CityArabicName ?d.CityArabicName:""),
+                Street_L2: (null !=d.StreetNameAR? d.StreetNameAR:null),
+                District_L2: (null != d.DistrictAreaAR?d.DistrictAreaAR :null),
+                CompanyName_L2: null,
+                GovernorateID: null,
+                Governorate: "",
+                Governorate_L2: "",
+                Title_L2: (null != d.CustomerNameinAR?d.CustomerNameinAR :""),
+                ShortAddress: (null != d.ShortAddress? d.ShortAddress:""),
+                InternationalWasel: ( null !=  d.InternationalWasel?d.InternationalWasel [0] :"")
+   
+            };
+          
+              var ar = {
+                Title: (null != d.CustomerNameinAR? d.CustomerNameinAR:""),
+                Address1 : (null != d.buildingno?d.buildingno[0]:"" ) + ( null != d.StreetNameAR ?d.StreetNameAR:"")+(null != d.DistrictAreaAR?d.DistrictAreaAR:""),
+                Address2: (null != d.CityArabicName?d.CityArabicName:"" )+" " + ( null != d.zipcodenumber ?d.zipcodenumber[0]:"")+" - "+(null != d.additionalno?d.additionalno[0]:""),
+                ObjLatLng: (null != d.Latitude?d.Latitude:"" )+" " + ( null != Longitude?Longitude:""),
+                BuildingNumber: (null != d.buildingno? d.buildingno[0]:""),
+                Street: ( null !=  d.StreetNameAR?d.StreetNameAR :null),
+                District: ( null !=  d.DistrictAreaAR?d.DistrictAreaAR :""),
+                City:  ( null !=  d.CityArabicName?d.CityArabicName :""),
+                PostCode: ( null !=  d.zipcodenumber?d.zipcodenumber [0] :""),
+                AdditionalNumber: ( null !=  d.additionalno?d.additionalno [0] :""),
+                RegionName: ( null !=  d.EmirateArabicName?d.EmirateArabicName :""),
+                PolygonString:  ( null !=d.PolygonString?d.PolygonString :""),
+                IsPrimaryAddress: ( null !=  d.IsDefaultAddress?d.IsDefaultAddress [0] :""),
+                UnitNumber: ( null !=  d.UnitNo?d.UnitNo [0] :""),
+                Latitude: ( null !=  Latitude?Latitude :""),
+                Longitude: ( null != Longitude?Longitude:""),
+                CityId: ( null !=  d.cityId?d.cityId [0] :""),
+                RegionId: ( null !=  d.emirateid?d.emirateid [0] :""),
+                Restriction: ( null !=  d.Restriction?d.Restriction [0] :""),
+                PKAddressID: ( null !=  d.zipcodenumber?d.zipcodenumber [0] :"")+(null != d.buildingno?d.buildingno [0] :"")+  (null != d.additionalno?d.additionalno [0] :""),
+                DistrictID: null,
+                RegionName_L2: (null != d.EmirateEnglishName ? d.EmirateEnglishName[0] :""),
+                City_L2: (null != d.CityEnglishName ?d.CityEnglishName[0]:""),
+                Street_L2: (null !=d.StreetNameEN? d.StreetNameEN[0]:null),
+                District_L2: (null != d.DistrictAreaEN?d.DistrictAreaEN[0] :null),
+                CompanyName_L2: null,
+                GovernorateID: null,
+                Governorate: "",
+                Governorate_L2: "",
+                Title_L2: null,
+                ShortAddress: (null != d.ShortAddress? d.ShortAddress:""),
+                InternationalWasel: ( null !=  d.InternationalWasel?d.InternationalWasel [0] :"")
+   
+            };
+
+             var data = lang.toLowerCase()=='e'?english:ar;
+            address.push(data);
+
+
+}
+return address;
+    }]]></script>
+                </case>
+                <default>
+                    <payloadFactory media-type="json">
+                        <format>{&#xd;
+"Message":"invalid Solrobject"&#xd;
+}</format>
+                        <args/>
+                    </payloadFactory>
+                </default>
+            </switch>
+            <log level="full" separator=","/>
+            <loopback/>
+        </inSequence>
+        <outSequence>
+            <call-template description="Common Log Templete" target="mi-CommonLog">
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="contentType" value="application/json"/>
+            </call-template>
+            <respond/>
+        </outSequence>
+        <faultSequence>
+            <payloadFactory media-type="json">
+                <format>{&#xd;
+    "totalSearchResults":"0",&#xd;
+    "success": "false",&#xd;
+    "statusdescription":"$1"&#xd;
+}</format>
+                <args>
+                    <arg evaluator="xml" expression="$ctx:ERROR_MESSAGE"/>
+                </args>
+            </payloadFactory>
+            <log level="full"/>
+            <property name="HTTP_SC" scope="axis2" type="STRING" value="200"/>
+            <log level="full"/>
+            <call-template description="" target="mi-CommonLog">
+                <with-param name="flowId" value="{$ctx:CommonLogFlowId}"/>
+                <with-param name="outQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="inQueue" value="{$ctx:CommonLogInQueue}"/>
+                <with-param name="loggingId" value="{$ctx:CommonLogLoggingId}"/>
+                <with-param name="loggingId2" value="{$ctx:CommonLogLoggingId2}"/>
+                <with-param name="messageType" value="{$ctx:CommonLogMessageType}"/>
+                <with-param name="isError" value="true"/>
+                <with-param name="contentType" value="application/json"/>
+            </call-template>
+            <respond/>
+        </faultSequence>
+    </resource>
+</api>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><artifacts>
+    <artifact name="CRMNAScripts" groupId="com.example.resource" version="1.0.0" type="registry/resource" serverRole="EnterpriseIntegrator">
+        <item>
+            <file>CRMNAScripts.js</file>
+            <path>/_system/governance/scripts</path>
+            <mediaType>application/javascript</mediaType>
+            <properties/>
+        </item>
+    </artifact>
+    <artifact name="NAScripts" groupId="com.example.resource" version="1.0.0" type="registry/resource" serverRole="EnterpriseIntegrator">
+        <item>
+            <file>NAScripts.js</file>
+            <path>/_system/governance/scipts</path>
+            <mediaType>application/javascript</mediaType>
+            <properties/>
+        </item>
+    </artifact>
+</artifacts>

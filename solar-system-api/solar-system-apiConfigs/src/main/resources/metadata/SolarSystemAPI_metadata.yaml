@@ -1,0 +1,11 @@
+---
+key: "SolarSystemAPI-1.0.0"
+name : "SolarSystemAPI"
+displayName : "SolarSystemAPI"
+description: "Sample API"
+version: "1.0.0"
+serviceUrl: "https://{MI_HOST}:{MI_PORT}/sapi/solr"
+definitionType: "OAS3"
+securityType: "BASIC"
+mutualSSLEnabled: false
+apiId : "null"

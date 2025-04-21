@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: SolarSystemAPI
+  description: This API exposes operations – To Fetch National Address by Query based
+    on the query parameters
+  termsOfService: http://splonline.com/terms/
+  contact:
+    email: admin@splonline.com
+  version: 1.0.0
+servers:
+- url: http://localhost:8290/sapi/solr
+paths:
+  /fetchByQuery:
+    post:
+      requestBody:
+        description: Sample Payload
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: object
+        required: false
+      responses:
+        default:
+          description: Default response
+components:
+  schemas:
+    req:
+      type: object
+      properties:
+        Query:
+          type: string
+        CorelationId:
+          type: string
+          example: 71eac955-d14b-4e26-b71a-c8d18c8bb4c9
+        Language:
+          type: string
+          example: A
+        SolrObject:
+          type: string
+          example: CRMNA
+        RequestFrom:
+          type: string
+          example: AddressByID
+        start:
+          type: integer
+          format: int64
+          example: 0
+        rows:
+          type: integer
+          format: int64
+          example: 10
+    res:
+      type: object
+      properties:
+        totalSearchResults:
+          type: string
+          example: '10'
+        Success:
+          type: boolean
+          example: true
+        StatusDescription:
+          type: string
+          example: success
+        Addresspart1:
+          type: string
+          example: 3512 al aqiq rd - An Nuzhah Dist
+        Addresspart2:
+          type: string
+          example: ABHA - 62523 - 3887
+        ObjLatLng:
+          type: string
+        BuildingNumber:
+          type: string
+          example: '2673'
+        Street:
+          type: string
+          example: 123H
+        District:
+          type: string
+          example: As Safa Dist
+        City:
+          type: string
+          example: JAZAN
+        PostCode:
+          type: string
+          example: '82721'
+        AdditionalNumber:
+          type: string
+          example: '6928'
+        RegionName:
+          type: string
+          example: Jazan
+        Latitude:
+          type: string
+          example: '16.8867972791945'
+        Longitude:
+          type: string
+          example: '42.5634453256567'
+        CityId:
+          type: string
+          example: '29'
+        RegionId:
+          type: string
+          example: '14'
+        Restriction:
+          type: string
+        PKAddressID:
+          type: string
+          example: 82721-2673-6928
+        DistrictID:
+          type: string
